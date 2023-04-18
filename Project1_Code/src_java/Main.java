@@ -8,8 +8,8 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
         try {
-            String jsonStrings = Files.readString(Path.of("resource/posts.json"));
-            List<Post> posts = JSON.parseArray(jsonStrings,Post.class);
+            String jsonStrings = Files.readString(Path.of("./resource/posts.json"));
+            List<Post> posts = JSON.parseArray(jsonStrings, Post.class);
             posts.forEach(System.out::println);
 
         } catch (IOException e) {

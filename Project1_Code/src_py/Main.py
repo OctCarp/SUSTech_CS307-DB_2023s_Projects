@@ -1,6 +1,6 @@
 import json
 
-filename = 'resource/posts.json' # the path of json file
+filename = '../resource/posts.json' # the path of json file
 with open(filename) as f:
     posts = json.load(f)
 
