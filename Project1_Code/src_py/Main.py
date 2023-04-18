@@ -37,38 +37,53 @@ conn = psycopg2.connect(database="project1", user="checker", password="123456", 
 cur = conn.cursor()
 
 Authors = []
+cities = []
+Category = []
+Author_id = []
+Author_phone = []
 
 for post in posts:
-    # print(type(post))  # it is a dist type
-    # print(post['Post ID'])
-    # print(json.dumps(post, indent=1))
 
     Post_ID = post['Post ID']+1
     Title = post['Title']
     Content = post['Content']
     Posting_Time = post['Posting Time']
-    Posting_City = post['Posting City']
     Author = post['Author']
     Author_Registration_Time = post['Author Registration Time']
     Author_ID = post['Author\'s ID']
     Author_Phone = post['Author\'s Phone']
 
+    Posting_City = post['Posting City']
+    last_comma_index = Posting_City.rfind(',')
+    City_Name = Posting_City[:last_comma_index]
+    City_Country = Posting_City[last_comma_index + 2:]
+
     if Author not in Authors:
         Authors.append(Author)
-
+        Author_id.append(Author_ID)
+        Author_phone.append(Author_Phone)
     A_id = Authors.index(Author)+1
+
+    if City_Name not in cities:
+        cities.append(City_Name)
+        cur.execute("INSERT INTO Cities (City_Name, City_Country) VALUES (%s, %s)",
+                    (City_Name, City_Country))
 
     cur.execute("INSERT INTO Authors (A_id, Author_name, Author_Registration_Time, Author_id, Author_Phone_number) "
                 "VALUES (%s, %s, %s, %s, %s)",
-                (str(A_id), Author, Author_Registration_Time, Author_ID, Author_Phone))
+                (A_id, Author, Author_Registration_Time, Author_ID, Author_Phone))
 
     cur.execute("INSERT INTO Posts (P_id, A_id, Title, Content, Author_Registration_Time, Posting_Time, Posting_City) "
                 "VALUES (%s, %s, %s, %s, %s, %s, %s)",
-                (str(Post_ID), str(A_id), Title, Content, Author_Registration_Time, Posting_Time, Posting_City))
+                (str(Post_ID), str(A_id), Title, Content, Author_Registration_Time, Posting_Time, City_Name))
 
     Cate = post['Category']
     for cate in Cate:
-        cur.execute("INSERT INTO Category (P_id, P_Category) VALUES (%s, %s)", (Post_ID, cate))
+        if cate not in Category:
+            Category.append(cate)
+            C_id = Category.index(cate)
+            cur.execute("INSERT INTO Category (C_id, Category_Name) VALUES (%s, %s)", (str(C_id), cate))
+            cur.execute("INSERT INTO Post_Category (P_id, C_id) VALUES (%s, %s)", (str(Post_ID), str(C_id)))
 
 
 for post in posts:
@@ -82,6 +97,10 @@ for post in posts:
             A_id = Authors.index(name)+1
             random_id = generate_random_18()
             random_number = generate_random_11()
+            while random_id in Author_id:
+                random_id = generate_random_18()
+            while random_number in Author_phone:
+                random_number = generate_random_11()
             random_time = generate_random_time(Start_Date, End_Date)
             cur.execute(
                 "INSERT INTO Authors (A_id, Author_name, Author_Registration_Time, Author_id, Author_Phone_number) "
@@ -89,10 +108,11 @@ for post in posts:
                 (A_id, name, random_time, random_id, random_number))
 
         A_id = Authors.index(Author)+1
+        Follower_id = Authors.index(name)+1
         cur.execute(
-            "INSERT INTO Follower (A_id, Follower_name) "
+            "INSERT INTO Follower (A_id, Follower_id) "
             "VALUES (%s, %s)",
-            (A_id, name))
+            (A_id, Follower_id))
 
     Favorite = post['Authors Who Favorited the Post']
     for name in Favorite:
@@ -101,16 +121,21 @@ for post in posts:
             A_id = Authors.index(name)+1
             random_id = generate_random_18()
             random_number = generate_random_11()
+            while random_id in Author_id:
+                random_id = generate_random_18()
+            while random_number in Author_phone:
+                random_number = generate_random_11()
             random_time = generate_random_time(Start_Date, End_Date)
             cur.execute(
                 "INSERT INTO Authors (A_id, Author_name, Author_Registration_Time, Author_id, Author_Phone_number) "
                 "VALUES (%s, %s, %s, %s, %s)",
                 (A_id, name, random_time, random_id, random_number))
 
+        Favorited_id = Authors.index(name)+1
         cur.execute(
-            "INSERT INTO Favorited (P_id, Favorited_name) "
+            "INSERT INTO Favorited (P_id, Favorited_id) "
             "VALUES (%s, %s)",
-            (Post_ID, name))
+            (Post_ID, Favorited_id))
 
     Share = post['Authors Who Shared the Post']
     for name in Share:
@@ -120,16 +145,21 @@ for post in posts:
             A_id = Authors.index(name)+1
             random_id = generate_random_18()
             random_number = generate_random_11()
+            while random_id in Author_id:
+                random_id = generate_random_18()
+            while random_number in Author_phone:
+                random_number = generate_random_11()
             random_time = generate_random_time(Start_Date, End_Date)
             cur.execute(
                 "INSERT INTO Authors (A_id, Author_name, Author_Registration_Time, Author_id, Author_Phone_number) "
                 "VALUES (%s, %s, %s, %s, %s)",
                 (A_id, name, random_time, random_id, random_number))
 
+        Shared_id = Authors.index(name)+1
         cur.execute(
-            "INSERT INTO Shared (P_id, Shared_name) "
+            "INSERT INTO Shared (P_id, Shared_id) "
             "VALUES (%s, %s)",
-            (Post_ID, name))
+            (Post_ID, Shared_id))
 
     Like = post['Authors Who Shared the Post']
     for name in Like:
@@ -138,16 +168,21 @@ for post in posts:
             A_id = Authors.index(name)+1
             random_id = generate_random_18()
             random_number = generate_random_11()
+            while random_id in Author_id:
+                random_id = generate_random_18()
+            while random_number in Author_phone:
+                random_number = generate_random_11()
             random_time = generate_random_time(Start_Date, End_Date)
             cur.execute(
                 "INSERT INTO Authors (A_id, Author_name, Author_Registration_Time, Author_id, Author_Phone_number) "
                 "VALUES (%s, %s, %s, %s, %s)",
                 (A_id, name, random_time, random_id, random_number))
 
+        Liked_id = Authors.index(name)+1
         cur.execute(
-            "INSERT INTO Liked (P_id, Liked_name) "
+            "INSERT INTO Liked (P_id, Liked_id) "
             "VALUES (%s, %s)",
-            (Post_ID, name))
+            (Post_ID, Liked_id))
 
 conn.commit()
 cur.close()
@@ -162,133 +197,64 @@ cur = conn.cursor()
 
 reply1 = []
 reply2 = []
-recordpostid = 1
-recordreplyid = 1
 
 for reply in replies:
     Post_ID = reply['Post ID']+1
-    if Post_ID == recordpostid:
-        Reply_Content = reply['Reply Content']
-        Reply_Stars = reply['Reply Stars']
-        Reply_Author = reply['Reply Author']
-        Secondary_Reply_Content = reply['Secondary Reply Content']
-        Secondary_Reply_Stars = reply['Secondary Reply Stars']
-        Secondary_Reply_Author = reply['Secondary Reply Author']
+    Reply_Content = reply['Reply Content']
+    Reply_Stars = reply['Reply Stars']
+    Reply_Author = reply['Reply Author']
+    Secondary_Reply_Content = reply['Secondary Reply Content']
+    Secondary_Reply_Stars = reply['Secondary Reply Stars']
+    Secondary_Reply_Author = reply['Secondary Reply Author']
 
-        if Reply_Author not in Authors:
-            Authors.append(Reply_Author)
-            A_id = Authors.index(Reply_Author)+1
+    if Reply_Author not in Authors:
+        Authors.append(Reply_Author)
+        A_id = Authors.index(Reply_Author)+1
+        random_id = generate_random_18()
+        random_number = generate_random_11()
+        while random_id in Author_id:
             random_id = generate_random_18()
+        while random_number in Author_phone:
             random_number = generate_random_11()
-            random_time = generate_random_time(Start_Date, End_Date)
-            cur.execute(
-                "INSERT INTO Authors (A_id, Author_name, Author_Registration_Time, Author_id, Author_Phone_number) "
-                "VALUES (%s, %s, %s, %s, %s)",
-                (A_id, Reply_Author, random_time, random_id, random_number))
+        random_time = generate_random_time(Start_Date, End_Date)
+        cur.execute(
+            "INSERT INTO Authors (A_id, Author_name, Author_Registration_Time, Author_id, Author_Phone_number) "
+            "VALUES (%s, %s, %s, %s, %s)",
+            (A_id, Reply_Author, random_time, random_id, random_number))
 
-        if Secondary_Reply_Author not in Authors:
-            Authors.append(Secondary_Reply_Author)
-            A_id = Authors.index(Secondary_Reply_Author)+1
+    if Secondary_Reply_Author not in Authors:
+        Authors.append(Secondary_Reply_Author)
+        A_id = Authors.index(Secondary_Reply_Author)+1
+        random_id = generate_random_18()
+        random_number = generate_random_11()
+        while random_id in Author_id:
             random_id = generate_random_18()
+        while random_number in Author_phone:
             random_number = generate_random_11()
-            random_time = generate_random_time(Start_Date, End_Date)
-            cur.execute(
-                "INSERT INTO Authors (A_id, Author_name, Author_Registration_Time, Author_id, Author_Phone_number) "
-                "VALUES (%s, %s, %s, %s, %s)",
-                (A_id, Secondary_Reply_Author, random_time, random_id, random_number))
+        random_time = generate_random_time(Start_Date, End_Date)
+        cur.execute(
+            "INSERT INTO Authors (A_id, Author_name, Author_Registration_Time, Author_id, Author_Phone_number) "
+            "VALUES (%s, %s, %s, %s, %s)",
+            (A_id, Secondary_Reply_Author, random_time, random_id, random_number))
 
-        if Reply_Content not in reply1:
-            reply1.append(Reply_Content)
-            R_id1 = reply1.index(Reply_Content)+1
+    if Reply_Content not in reply1:
+        reply1.append(Reply_Content)
+        R_id1 = reply1.index(Reply_Content) + 1
+        cur.execute(
+            "INSERT INTO Replies (R_id1, P_id, Reply_Content, Reply_Stars, Reply_Author) "
+            "VALUES (%s, %s, %s, %s, %s)",
+            (R_id1, Post_ID, Reply_Content, Reply_Stars, Reply_Author))
 
-            cur.execute(
-                "INSERT INTO Replies (P_id, R_id1, Reply_Content, Reply_Stars, Reply_Author) "
-                "VALUES (%s, %s, %s, %s, %s)",
-                (Post_ID, R_id1, Reply_Content, Reply_Stars, Reply_Author))
+    R_id1 = reply1.index(Reply_Content) + 1
 
-        R_id1 = reply1.index(Reply_Content)+1
-        if R_id1 == recordreplyid:
-            if Secondary_Reply_Content not in reply2:
-                reply2.append(Secondary_Reply_Content)
-                R_id2 = reply2.index(Secondary_Reply_Content)+1
-                cur.execute(
-                    "INSERT INTO Secondary_Replies (P_id, R_id1, R_id2, "
-                    "Secondary_Reply_Content, Secondary_Reply_Stars, Secondary_Reply_Author) "
-                    "VALUES (%s, %s, %s, %s, %s, %s)",
-                    (Post_ID, R_id1, R_id2, Secondary_Reply_Content, Secondary_Reply_Stars, Secondary_Reply_Author))
-        else:
-            recordreplyid += 1
-            if Secondary_Reply_Content not in reply2:
-                reply2.append(Secondary_Reply_Content)
-                R_id2 = reply2.index(Secondary_Reply_Content)+1
-                cur.execute(
-                    "INSERT INTO Secondary_Replies (P_id, R_id1, R_id2, "
-                    "Secondary_Reply_Content, Secondary_Reply_Stars, Secondary_Reply_Author) "
-                    "VALUES (%s, %s, %s, %s, %s, %s)",
-                    (Post_ID, R_id1, R_id2, Secondary_Reply_Content, Secondary_Reply_Stars, Secondary_Reply_Author))
-
-    else:
-        reply1.clear()
-        reply2.clear()
-        recordpostid += 1
-        recordreplyid = 1
-        Reply_Content = reply['Reply Content']
-        Reply_Stars = reply['Reply Stars']
-        Reply_Author = reply['Reply Author']
-        Secondary_Reply_Content = reply['Secondary Reply Content']
-        Secondary_Reply_Stars = reply['Secondary Reply Stars']
-        Secondary_Reply_Author = reply['Secondary Reply Author']
-
-        if Reply_Author not in Authors:
-            Authors.append(Reply_Author)
-            A_id = Authors.index(Reply_Author)+1
-            random_id = generate_random_18()
-            random_number = generate_random_11()
-            random_time = generate_random_time(Start_Date, End_Date)
-            cur.execute(
-                "INSERT INTO Authors (A_id, Author_name, Author_Registration_Time, Author_id, Author_Phone_number) "
-                "VALUES (%s, %s, %s, %s, %s)",
-                (A_id, Reply_Author, random_time, random_id, random_number))
-
-        if Secondary_Reply_Author not in Authors:
-            Authors.append(Secondary_Reply_Author)
-            A_id = Authors.index(Secondary_Reply_Author)+1
-            random_id = generate_random_18()
-            random_number = generate_random_11()
-            random_time = generate_random_time(Start_Date, End_Date)
-            cur.execute(
-                "INSERT INTO Authors (A_id, Author_name, Author_Registration_Time, Author_id, Author_Phone_number) "
-                "VALUES (%s, %s, %s, %s, %s)",
-                (A_id, Secondary_Reply_Author, random_time, random_id, random_number))
-
-        if Reply_Content not in reply1:
-            reply1.append(Reply_Content)
-            R_id1 = reply1.index(Reply_Content)+1
-            cur.execute(
-                "INSERT INTO Replies (P_id, R_id1, Reply_Content, Reply_Stars, Reply_Author) "
-                "VALUES (%s, %s, %s, %s, %s)",
-                (Post_ID, R_id1, Reply_Content, Reply_Stars, Reply_Author))
-
-        R_id1 = reply1.index(Reply_Content)+1
-        if R_id1 == recordreplyid:
-            if Secondary_Reply_Content not in reply2:
-                reply2.append(Secondary_Reply_Content)
-                R_id2 = reply2.index(Secondary_Reply_Content)+1
-                cur.execute(
-                    "INSERT INTO Secondary_Replies (P_id, R_id1, R_id2, "
-                    "Secondary_Reply_Content, Secondary_Reply_Stars, Secondary_Reply_Author) "
-                    "VALUES (%s, %s, %s, %s, %s, %s)",
-                    (Post_ID, R_id1, R_id2, Secondary_Reply_Content, Secondary_Reply_Stars, Secondary_Reply_Author))
-        else:
-            recordreplyid += 1
-            if Secondary_Reply_Content not in reply2:
-                reply2.append(Secondary_Reply_Content)
-                R_id2 = reply2.index(Secondary_Reply_Content)+1
-                cur.execute(
-                    "INSERT INTO Secondary_Replies (P_id, R_id1, R_id2, "
-                    "Secondary_Reply_Content, Secondary_Reply_Stars, Secondary_Reply_Author) "
-                    "VALUES (%s, %s, %s, %s, %s, %s)",
-                    (Post_ID, R_id1, R_id2, Secondary_Reply_Content, Secondary_Reply_Stars, Secondary_Reply_Author))
+    if Secondary_Reply_Content not in reply2:
+        reply2.append(Secondary_Reply_Content)
+        R_id2 = reply2.index(Secondary_Reply_Content) + 1
+        cur.execute(
+            "INSERT INTO Secondary_Replies (R_id2, R_id1,"
+            "Secondary_Reply_Content, Secondary_Reply_Stars, Secondary_Reply_Author) "
+            "VALUES (%s, %s, %s, %s, %s)",
+            (R_id2, R_id1, Secondary_Reply_Content, Secondary_Reply_Stars, Secondary_Reply_Author))
 
 conn.commit()
 cur.close()
