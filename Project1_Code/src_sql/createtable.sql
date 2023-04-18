@@ -39,8 +39,8 @@ CREATE TABLE IF NOT EXISTS Category
 
 CREATE TABLE IF NOT EXISTS Post_Category
 (
-    P_id integer NOT NULL ,
-    C_id integer NOT NULL ,
+    P_id integer NOT NULL REFERENCES Posts(P_id),
+    C_id integer NOT NULL REFERENCES category(C_id),
 
     CONSTRAINT Post_Category_pk PRIMARY KEY (P_id,C_id)
 );
