@@ -106,9 +106,11 @@ def import_post_author():
             if cate not in Category:
                 Category.append(cate)
                 c_id = Category.index(cate)
-
                 cur.execute(ins_cate, (str(c_id), cate))
-                cur.execute(ins_post_cate, (str(post_id), str(c_id)))
+            else:
+                c_id = Category.index(cate)
+
+            cur.execute(ins_post_cate, (str(post_id), str(c_id)))
 
 
 def import_post_misc():
