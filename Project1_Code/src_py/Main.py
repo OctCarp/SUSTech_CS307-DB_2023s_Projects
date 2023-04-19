@@ -4,16 +4,46 @@ import random
 from datetime import datetime, timedelta
 import time
 
-start_time = time.time()
+post_file = 'resource/posts.json'
+with open(post_file) as f:
+    posts = json.load(f)
+reply_file = 'resource/replies.json'
+with open(reply_file) as f:
+    replies = json.load(f)
+
+db = ['localhost', '5432', 'checker', '123456', 'CS307_Project1']
+
+ins_author = """INSERT INTO authors (a_id, author_name, author_registration_time, author_id, author_phone_number) 
+        VALUES (%s, %s, %s, %s, %s)"""
+ins_post = """INSERT INTO posts (p_id, a_id, title, content, author_registration_time, posting_time, posting_city)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+ins_city = "INSERT INTO cities (city_name, city_country) VALUES (%s, %s)"
+ins_cate = "INSERT INTO category (c_id, category_name) VALUES (%s, %s)"
+ins_post_cate = "INSERT INTO post_category (p_id, c_id) VALUES (%s, %s)"
+ins_follower = "INSERT INTO follower (a_id, follower_id) VALUES (%s, %s)"
+ins_favorited = "INSERT INTO favorited (p_id, favorited_id) VALUES (%s, %s)"
+ins_liked = "INSERT INTO liked (p_id, liked_id) VALUES (%s, %s)"
+ins_share = "INSERT INTO shared (p_id, shared_id) VALUES (%s, %s)"
+ins_reply = """INSERT INTO replies (r_id1, p_id, reply_content, reply_stars, reply_author_id)
+        VALUES (%s, %s, %s, %s, %s)"""
+ins_sec_reply = """INSERT INTO secondary_replies (r_id2, r_id1,secondary_reply_content, secondary_reply_stars,
+        secondary_reply_author_id) VALUES (%s, %s, %s, %s, %s)"""
+
+Authors = []
+Cities = []
+Category = []
+Author_id = []
+Author_phone = []
+
+reply1 = []
+reply2 = []
+
+Start_Date = datetime.strptime('2000-01-01 00:00:00', '%Y-%m-%d %H:%M:%S')
+End_Date = datetime.strptime('2022-12-31 23:59:59', '%Y-%m-%d %H:%M:%S')
 
 
-def generate_random_18():
-    rand_num = ''.join([str(random.randint(0, 9)) for _ in range(18)])
-    return rand_num
-
-
-def generate_random_11():
-    rand_num = ''.join([str(random.randint(0, 9)) for _ in range(11)])
+def generate_random_length(length):
+    rand_num = ''.join([str(random.randint(0, 9)) for _ in range(length)])
     return rand_num
 
 
@@ -25,241 +55,148 @@ def generate_random_time(start_date, end_date):
     return rand_time.strftime(time_format)
 
 
-Start_Date = datetime.strptime('2000-01-01 00:00:00', '%Y-%m-%d %H:%M:%S')
-End_Date = datetime.strptime('2022-12-31 23:59:59', '%Y-%m-%d %H:%M:%S')
+def generate_author(in_name):
+    Authors.append(in_name)
+    in_a_id = Authors.index(in_name) + 1
+    in_random_id = generate_random_length(18)
+    in_random_number = generate_random_length(11)
+
+    while in_random_id in Author_id:
+        in_random_id = generate_random_length(18)
+
+    while in_random_number in Author_phone:
+        in_random_number = generate_random_length(11)
+
+    in_random_time = generate_random_time(Start_Date, End_Date)
+    cur.execute(ins_author, (in_a_id, in_name, in_random_time, in_random_id, in_random_number))
 
 
-filename1 = 'D:/各科常用/数据库/project data and scripts/posts.json'  # the path of json file
-with open(filename1) as f:
-    posts = json.load(f)
+def import_post_author():
+    for post in posts:
+        post_id = post['Post ID']
+        title = post['Title']
+        content = post['Content']
+        posting_time = post['Posting Time']
+        author = post['Author']
+        author_registration_time = post['Author Registration Time']
+        author_id = post['Author\'s ID']
+        author_phone = post['Author\'s Phone']
+        posting_city = post['Posting City']
 
-conn = psycopg2.connect(database="project1", user="checker", password="123456", host="localhost", port="5432")
-cur = conn.cursor()
+        last_comma_index = posting_city.rfind(',')
+        city_name = posting_city[:last_comma_index]
+        city_country = posting_city[last_comma_index + 2:]
 
-Authors = []
-cities = []
-Category = []
-Author_id = []
-Author_phone = []
+        if author not in Authors:
+            Authors.append(author)
+            Author_id.append(author_id)
+            Author_phone.append(author_phone)
+        a_id = Authors.index(author) + 1
 
-for post in posts:
+        if city_name not in Cities:
+            Cities.append(city_name)
+            cur.execute(ins_city, (city_name, city_country))
 
-    Post_ID = post['Post ID']+1
-    Title = post['Title']
-    Content = post['Content']
-    Posting_Time = post['Posting Time']
-    Author = post['Author']
-    Author_Registration_Time = post['Author Registration Time']
-    Author_ID = post['Author\'s ID']
-    Author_Phone = post['Author\'s Phone']
+        cur.execute(ins_author, (a_id, author, author_registration_time, author_id, author_phone))
+        cur.execute(ins_post,
+                    (str(post_id), str(a_id), title, content, author_registration_time, posting_time, city_name))
 
-    Posting_City = post['Posting City']
-    last_comma_index = Posting_City.rfind(',')
-    City_Name = Posting_City[:last_comma_index]
-    City_Country = Posting_City[last_comma_index + 2:]
+        cates = post['Category']
+        for cate in cates:
+            if cate not in Category:
+                Category.append(cate)
+                c_id = Category.index(cate)
 
-    if Author not in Authors:
-        Authors.append(Author)
-        Author_id.append(Author_ID)
-        Author_phone.append(Author_Phone)
-    A_id = Authors.index(Author)+1
-
-    if City_Name not in cities:
-        cities.append(City_Name)
-        cur.execute("INSERT INTO Cities (City_Name, City_Country) VALUES (%s, %s)",
-                    (City_Name, City_Country))
-
-    cur.execute("INSERT INTO Authors (A_id, Author_name, Author_Registration_Time, Author_id, Author_Phone_number) "
-                "VALUES (%s, %s, %s, %s, %s)",
-                (A_id, Author, Author_Registration_Time, Author_ID, Author_Phone))
-
-    cur.execute("INSERT INTO Posts (P_id, A_id, Title, Content, Author_Registration_Time, Posting_Time, Posting_City) "
-                "VALUES (%s, %s, %s, %s, %s, %s, %s)",
-                (str(Post_ID), str(A_id), Title, Content, Author_Registration_Time, Posting_Time, City_Name))
-
-    Cate = post['Category']
-    for cate in Cate:
-        if cate not in Category:
-            Category.append(cate)
-            C_id = Category.index(cate)
-            cur.execute("INSERT INTO Category (C_id, Category_Name) VALUES (%s, %s)", (str(C_id), cate))
-            cur.execute("INSERT INTO Post_Category (P_id, C_id) VALUES (%s, %s)", (str(Post_ID), str(C_id)))
+                cur.execute(ins_cate, (str(c_id), cate))
+                cur.execute(ins_post_cate, (str(post_id), str(c_id)))
 
 
-for post in posts:
-    Author = post['Author']
-    Post_ID = post['Post ID']+1
+def import_post_misc():
+    for post in posts:
+        author = post['Author']
+        post_id = post['Post ID']
 
-    Follow = post['Authors Followed By']
-    for name in Follow:
-        if name not in Authors:
-            Authors.append(name)
-            A_id = Authors.index(name)+1
-            random_id = generate_random_18()
-            random_number = generate_random_11()
-            while random_id in Author_id:
-                random_id = generate_random_18()
-            while random_number in Author_phone:
-                random_number = generate_random_11()
-            random_time = generate_random_time(Start_Date, End_Date)
-            cur.execute(
-                "INSERT INTO Authors (A_id, Author_name, Author_Registration_Time, Author_id, Author_Phone_number) "
-                "VALUES (%s, %s, %s, %s, %s)",
-                (A_id, name, random_time, random_id, random_number))
+        followers = post['Authors Followed By']
+        for name in followers:
+            if name not in Authors:
+                generate_author(name)
+            a_id = Authors.index(author) + 1
+            follower_id = Authors.index(name) + 1
 
-        A_id = Authors.index(Author)+1
-        Follower_id = Authors.index(name)+1
-        cur.execute(
-            "INSERT INTO Follower (A_id, Follower_id) "
-            "VALUES (%s, %s)",
-            (A_id, Follower_id))
+            cur.execute(ins_follower, (a_id, follower_id))
 
-    Favorite = post['Authors Who Favorited the Post']
-    for name in Favorite:
-        if name not in Authors:
-            Authors.append(name)
-            A_id = Authors.index(name)+1
-            random_id = generate_random_18()
-            random_number = generate_random_11()
-            while random_id in Author_id:
-                random_id = generate_random_18()
-            while random_number in Author_phone:
-                random_number = generate_random_11()
-            random_time = generate_random_time(Start_Date, End_Date)
-            cur.execute(
-                "INSERT INTO Authors (A_id, Author_name, Author_Registration_Time, Author_id, Author_Phone_number) "
-                "VALUES (%s, %s, %s, %s, %s)",
-                (A_id, name, random_time, random_id, random_number))
+        favorite = post['Authors Who Favorited the Post']
+        for name in favorite:
+            if name not in Authors:
+                generate_author(name)
+            favorited_id = Authors.index(name) + 1
 
-        Favorited_id = Authors.index(name)+1
-        cur.execute(
-            "INSERT INTO Favorited (P_id, Favorited_id) "
-            "VALUES (%s, %s)",
-            (Post_ID, Favorited_id))
+            cur.execute(ins_favorited, (post_id, favorited_id))
 
-    Share = post['Authors Who Shared the Post']
-    for name in Share:
+        share = post['Authors Who Shared the Post']
+        for name in share:
+            if name not in Authors:
+                generate_author(name)
+            shared_id = Authors.index(name) + 1
 
-        if name not in Authors:
-            Authors.append(name)
-            A_id = Authors.index(name)+1
-            random_id = generate_random_18()
-            random_number = generate_random_11()
-            while random_id in Author_id:
-                random_id = generate_random_18()
-            while random_number in Author_phone:
-                random_number = generate_random_11()
-            random_time = generate_random_time(Start_Date, End_Date)
-            cur.execute(
-                "INSERT INTO Authors (A_id, Author_name, Author_Registration_Time, Author_id, Author_Phone_number) "
-                "VALUES (%s, %s, %s, %s, %s)",
-                (A_id, name, random_time, random_id, random_number))
+            cur.execute(ins_share, (post_id, shared_id))
 
-        Shared_id = Authors.index(name)+1
-        cur.execute(
-            "INSERT INTO Shared (P_id, Shared_id) "
-            "VALUES (%s, %s)",
-            (Post_ID, Shared_id))
+        like = post['Authors Who Shared the Post']
+        for name in like:
+            if name not in Authors:
+                generate_author(name)
+            liked_id = Authors.index(name) + 1
 
-    Like = post['Authors Who Shared the Post']
-    for name in Like:
-        if name not in Authors:
-            Authors.append(name)
-            A_id = Authors.index(name)+1
-            random_id = generate_random_18()
-            random_number = generate_random_11()
-            while random_id in Author_id:
-                random_id = generate_random_18()
-            while random_number in Author_phone:
-                random_number = generate_random_11()
-            random_time = generate_random_time(Start_Date, End_Date)
-            cur.execute(
-                "INSERT INTO Authors (A_id, Author_name, Author_Registration_Time, Author_id, Author_Phone_number) "
-                "VALUES (%s, %s, %s, %s, %s)",
-                (A_id, name, random_time, random_id, random_number))
+            cur.execute(ins_liked, (post_id, liked_id))
 
-        Liked_id = Authors.index(name)+1
-        cur.execute(
-            "INSERT INTO Liked (P_id, Liked_id) "
-            "VALUES (%s, %s)",
-            (Post_ID, Liked_id))
 
-conn.commit()
-cur.close()
-conn.close()
+def import_reply():
+    for reply in replies:
+        post_id = reply['Post ID']
+        reply_content = reply['Reply Content']
+        reply_stars = reply['Reply Stars']
+        reply_author = reply['Reply Author']
+        secondary_reply_content = reply['Secondary Reply Content']
+        secondary_reply_stars = reply['Secondary Reply Stars']
+        secondary_reply_author = reply['Secondary Reply Author']
 
-filename2 = 'D:/各科常用/数据库/project data and scripts/replies.json'  # the path of json file
-with open(filename2) as f:
-    replies = json.load(f)
+        if reply_author not in Authors:
+            generate_author(reply_author)
 
-conn = psycopg2.connect(database="project1", user="checker", password="123456", host="localhost", port="5432")
-cur = conn.cursor()
+        if secondary_reply_author not in Authors:
+            generate_author(secondary_reply_author)
 
-reply1 = []
-reply2 = []
+        if reply_content not in reply1:
+            reply1.append(reply_content)
+            r_id1 = reply1.index(reply_content) + 1
+            reply_author_id = Authors.index(reply_author) + 1
 
-for reply in replies:
-    Post_ID = reply['Post ID']+1
-    Reply_Content = reply['Reply Content']
-    Reply_Stars = reply['Reply Stars']
-    Reply_Author = reply['Reply Author']
-    Secondary_Reply_Content = reply['Secondary Reply Content']
-    Secondary_Reply_Stars = reply['Secondary Reply Stars']
-    Secondary_Reply_Author = reply['Secondary Reply Author']
+            cur.execute(ins_reply, (r_id1, post_id, reply_content, reply_stars, reply_author_id))
 
-    if Reply_Author not in Authors:
-        Authors.append(Reply_Author)
-        A_id = Authors.index(Reply_Author)+1
-        random_id = generate_random_18()
-        random_number = generate_random_11()
-        while random_id in Author_id:
-            random_id = generate_random_18()
-        while random_number in Author_phone:
-            random_number = generate_random_11()
-        random_time = generate_random_time(Start_Date, End_Date)
-        cur.execute(
-            "INSERT INTO Authors (A_id, Author_name, Author_Registration_Time, Author_id, Author_Phone_number) "
-            "VALUES (%s, %s, %s, %s, %s)",
-            (A_id, Reply_Author, random_time, random_id, random_number))
+        r_id1 = reply1.index(reply_content) + 1
 
-    if Secondary_Reply_Author not in Authors:
-        Authors.append(Secondary_Reply_Author)
-        A_id = Authors.index(Secondary_Reply_Author)+1
-        random_id = generate_random_18()
-        random_number = generate_random_11()
-        while random_id in Author_id:
-            random_id = generate_random_18()
-        while random_number in Author_phone:
-            random_number = generate_random_11()
-        random_time = generate_random_time(Start_Date, End_Date)
-        cur.execute(
-            "INSERT INTO Authors (A_id, Author_name, Author_Registration_Time, Author_id, Author_Phone_number) "
-            "VALUES (%s, %s, %s, %s, %s)",
-            (A_id, Secondary_Reply_Author, random_time, random_id, random_number))
+        if secondary_reply_content not in reply2:
+            reply2.append(secondary_reply_content)
+            r_id2 = reply2.index(secondary_reply_content) + 1
+            secondary_reply_author_id = Authors.index(secondary_reply_author) + 1
 
-    if Reply_Content not in reply1:
-        reply1.append(Reply_Content)
-        R_id1 = reply1.index(Reply_Content) + 1
-        cur.execute(
-            "INSERT INTO Replies (R_id1, P_id, Reply_Content, Reply_Stars, Reply_Author) "
-            "VALUES (%s, %s, %s, %s, %s)",
-            (R_id1, Post_ID, Reply_Content, Reply_Stars, Reply_Author))
+            cur.execute(ins_sec_reply, (r_id2, r_id1, secondary_reply_content,
+                                        secondary_reply_stars, secondary_reply_author_id))
 
-    R_id1 = reply1.index(Reply_Content) + 1
 
-    if Secondary_Reply_Content not in reply2:
-        reply2.append(Secondary_Reply_Content)
-        R_id2 = reply2.index(Secondary_Reply_Content) + 1
-        cur.execute(
-            "INSERT INTO Secondary_Replies (R_id2, R_id1,"
-            "Secondary_Reply_Content, Secondary_Reply_Stars, Secondary_Reply_Author) "
-            "VALUES (%s, %s, %s, %s, %s)",
-            (R_id2, R_id1, Secondary_Reply_Content, Secondary_Reply_Stars, Secondary_Reply_Author))
+if __name__ == '__main__':
+    start_time = time.time()
 
-conn.commit()
-cur.close()
-conn.close()
+    conn = psycopg2.connect(host=db[0], port=db[1], user=db[2], password=db[3], database=db[4])
+    cur = conn.cursor()
 
-end_time = time.time()
-cost_time = end_time - start_time
-print(cost_time)
+    import_post_author()
+    import_post_misc()
+    import_reply()
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    end_time = time.time()
+    print(end_time - start_time)

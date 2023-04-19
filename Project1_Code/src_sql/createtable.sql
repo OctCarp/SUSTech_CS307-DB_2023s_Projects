@@ -1,104 +1,100 @@
-CREATE TABLE IF NOT EXISTS Authors
+CREATE TABLE IF NOT EXISTS authors
 (
-    A_id SERIAL PRIMARY KEY ,
-    Author_name varchar NOT NULL UNIQUE ,
-    Author_Registration_Time timestamp NOT NULL UNIQUE,
-    Author_id char(18) NOT NULL UNIQUE
-        check ( length(Author_id) =18),
-    Author_Phone_number char(11) NOT NULL UNIQUE
-        check ( length(Author_Phone_number) =11)
+    a_id integer PRIMARY KEY ,
+    author_name varchar NOT NULL UNIQUE ,
+    author_registration_time timestamp NOT NULL UNIQUE,
+    author_id char(18) NOT NULL UNIQUE
+        check ( length(author_id) = 18),
+    author_phone_number char(11) NOT NULL UNIQUE
+        check ( length(author_phone_number) = 11)
 );
 
-CREATE TABLE IF NOT EXISTS Cities
+CREATE TABLE IF NOT EXISTS cities
 (
-    City_Name varchar NOT NULL
+    city_name varchar NOT NULL
         PRIMARY KEY,
-    City_Country varchar NOT NULL
+    city_country varchar NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS Posts
+CREATE TABLE IF NOT EXISTS posts
 (
-    P_id integer NOT NULL
+    p_id integer NOT NULL
         PRIMARY KEY ,
-    A_id integer REFERENCES  Authors(A_id),
-    Title varchar NOT NULL ,
-    Content varchar NOT NULL ,
-    Author_Registration_Time timestamp REFERENCES Authors(Author_Registration_Time) ,
-    Posting_Time timestamp NOT NULL ,
-    Posting_City varchar NOT NULL
-        REFERENCES Cities(City_Name),
+    a_id integer REFERENCES  authors(a_id),
+    title varchar NOT NULL ,
+    content varchar NOT NULL ,
+    author_registration_time timestamp REFERENCES authors(author_registration_time) ,
+    posting_time timestamp NOT NULL ,
+    posting_city varchar NOT NULL
+        REFERENCES cities(city_name),
 
-    CONSTRAINT Posts_ch check ( Posts.Posting_Time>Posts.Author_Registration_Time )
+    CONSTRAINT Posts_ch check ( posts.posting_time > posts.author_registration_time )
 );
 
-CREATE TABLE IF NOT EXISTS Category
+CREATE TABLE IF NOT EXISTS category
 (
-    C_id integer not null PRIMARY KEY ,
-    Category_Name varchar NOT NULL unique
+    c_id integer not null PRIMARY KEY ,
+    category_name varchar NOT NULL UNIQUE
 );
 
-CREATE TABLE IF NOT EXISTS Post_Category
+CREATE TABLE IF NOT EXISTS post_category
 (
-    P_id integer NOT NULL REFERENCES Posts(P_id),
-    C_id integer NOT NULL REFERENCES category(C_id),
+    p_id integer NOT NULL REFERENCES posts(p_id),
+    c_id integer NOT NULL REFERENCES category(c_id),
 
-    CONSTRAINT Post_Category_pk PRIMARY KEY (P_id,C_id)
+    CONSTRAINT Post_Category_pk PRIMARY KEY (p_id,c_id)
 );
 
-CREATE TABLE IF NOT EXISTS Follower
+CREATE TABLE IF NOT EXISTS follower
 (
-     A_id integer REFERENCES Authors(A_id),
-     Follower_id integer REFERENCES Authors(A_id),
+     a_id integer REFERENCES authors(a_id),
+     follower_id integer REFERENCES authors(a_id),
 
-    CONSTRAINT Follower_pk PRIMARY KEY (A_id,Follower_id)
+    CONSTRAINT Follower_pk PRIMARY KEY (a_id,follower_id)
 );
 
-CREATE TABLE IF NOT EXISTS Favorited
+CREATE TABLE IF NOT EXISTS favorited
 (
-    P_id integer REFERENCES Posts(P_id),
-    Favorited_id integer REFERENCES Authors(A_id),
+    p_id integer REFERENCES posts(p_id),
+    favorited_id integer REFERENCES authors(a_id),
 
-    CONSTRAINT Favorited_pk PRIMARY KEY (P_id,Favorited_id)
+    CONSTRAINT Favorited_pk PRIMARY KEY (p_id,favorited_id)
 );
 
-CREATE TABLE IF NOT EXISTS Shared
+CREATE TABLE IF NOT EXISTS shared
 (
-    P_id integer REFERENCES Posts(P_id),
-    Shared_id integer REFERENCES Authors(A_id),
+    p_id integer REFERENCES posts(p_id),
+    shared_id integer REFERENCES authors(a_id),
 
-    CONSTRAINT Shared_pk PRIMARY KEY (P_id,Shared_id)
+    CONSTRAINT Shared_pk PRIMARY KEY (p_id,shared_id)
 );
 
-CREATE TABLE IF NOT EXISTS Liked
+CREATE TABLE IF NOT EXISTS liked
 (
-    P_id integer REFERENCES Posts(P_id),
-    Liked_id integer REFERENCES Authors(A_id),
+    p_id integer REFERENCES posts(p_id),
+    liked_id integer REFERENCES authors(a_id),
 
-    CONSTRAINT liked_pk PRIMARY KEY (P_id,Liked_id)
+    CONSTRAINT liked_pk PRIMARY KEY (p_id,liked_id)
 );
 
-CREATE TABLE IF NOT EXISTS Replies
+CREATE TABLE IF NOT EXISTS replies
 (
-    R_id1 integer NOT NULL PRIMARY KEY ,
-    P_id integer REFERENCES Posts(P_id) NOT NULL ,
-    Reply_Content varchar NOT NULL ,
-    Reply_Stars integer NOT NULL
-        check ( Reply_Stars>=0 ),
-    Reply_Author varchar REFERENCES Authors(Author_name)
+    r_id1 integer NOT NULL PRIMARY KEY ,
+
+    p_id integer REFERENCES posts(p_id) NOT NULL ,
+    reply_content varchar NOT NULL ,
+    reply_stars integer NOT NULL
+        check ( reply_stars>=0 ),
+    reply_author_id integer REFERENCES authors(a_id)
 );
 
-CREATE TABLE IF NOT EXISTS Secondary_Replies
+CREATE TABLE IF NOT EXISTS secondary_replies
 (
-    R_id2 integer NOT NULL PRIMARY KEY ,
-    R_id1 integer NOT NULL ,
-    Secondary_Reply_Content varchar NOT NULL ,
-    Secondary_Reply_Stars integer NOT NULL
-        check ( Secondary_Reply_Stars>=0 ),
-    Secondary_Reply_Author varchar REFERENCES Authors(Author_name),
+    r_id2 integer NOT NULL PRIMARY KEY ,
 
-    CONSTRAINT Secondary_Replies_fk1 FOREIGN KEY (R_id1) REFERENCES Replies(R_id1)
+    r_id1 integer REFERENCES replies(r_id1) ,
+    secondary_reply_content varchar NOT NULL ,
+    secondary_reply_stars integer NOT NULL
+        check ( secondary_reply_stars>=0 ),
+    secondary_reply_author_id integer REFERENCES authors(a_id)
 );
-
-
-
-
