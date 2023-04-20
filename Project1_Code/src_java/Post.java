@@ -10,11 +10,12 @@ public class Post {
     private String Author;
     private String authorRegistrationTime;
     private String authorID;
-    private String authoPhone;
+    private String authorPhone;
     private List<String> authorFollowedBy;
-    private List<String> authorFavorite;
+    private List<String> authorFavorited;
     private List<String> authorShared;
     private List<String> authorLiked;
+    private int aID;
 
     @Override
     public String toString() {
@@ -28,9 +29,9 @@ public class Post {
                 ", Author='" + Author + '\'' +
                 ", authorRegistrationTime='" + authorRegistrationTime + '\'' +
                 ", authorID='" + authorID + '\'' +
-                ", authoPhone='" + authoPhone + '\'' +
+                ", authoPhone='" + authorPhone + '\'' +
                 ", authorFollowedBy=" + authorFollowedBy +
-                ", authorFavorite=" + authorFavorite +
+                ", authorFavorite=" + authorFavorited +
                 ", authorShared=" + authorShared +
                 ", authorLiked=" + authorLiked +
                 '}';
@@ -38,6 +39,14 @@ public class Post {
 
     public int getPostID() {
         return postID;
+    }
+
+    public void setAID(int aID) {
+        this.aID = aID;
+    }
+
+    public int getAID() {
+        return aID;
     }
 
     public void setPostID(int postID) {
@@ -108,12 +117,12 @@ public class Post {
         this.authorID = authorID;
     }
 
-    public String getAuthoPhone() {
-        return authoPhone;
+    public String getAuthorPhone() {
+        return authorPhone;
     }
 
-    public void setAuthoPhone(String authoPhone) {
-        this.authoPhone = authoPhone;
+    public void setAuthorPhone(String authoPhone) {
+        this.authorPhone = authoPhone;
     }
 
     public List<String> getAuthorFollowedBy() {
@@ -124,12 +133,12 @@ public class Post {
         this.authorFollowedBy = authorFollowedBy;
     }
 
-    public List<String> getAuthorFavorite() {
-        return authorFavorite;
+    public List<String> getAuthorFavorited() {
+        return authorFavorited;
     }
 
-    public void setAuthorFavorite(List<String> authorFavorite) {
-        this.authorFavorite = authorFavorite;
+    public void setAuthorFavorited(List<String> authorFavorited) {
+        this.authorFavorited = authorFavorited;
     }
 
     public List<String> getAuthorShared() {

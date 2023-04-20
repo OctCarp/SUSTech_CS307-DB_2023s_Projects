@@ -1,19 +1,16 @@
-import com.alibaba.fastjson.JSON;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
-
 public class Main {
     public static void main(String[] args) {
-        try {
-            String jsonStrings = Files.readString(Path.of("./resource/posts.json"));
-            List<Post> posts = JSON.parseArray(jsonStrings, Post.class);
-            posts.forEach(System.out::println);
+        Info.infoInit();
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        long startTime = System.currentTimeMillis();
+        normalImport();
+        long dur = System.currentTimeMillis() - startTime;
+
+        System.out.println(dur / 1000 + "." + dur % 1009 + "s");
+    }
+
+    private static void normalImport() {
+        Importer im = new Importer();
+        im.batchInsert();
     }
 }

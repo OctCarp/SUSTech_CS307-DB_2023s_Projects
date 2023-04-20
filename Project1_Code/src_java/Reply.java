@@ -1,4 +1,4 @@
-public class Replies {
+public class Reply {
     private int postID;
     private String replyContent;
     private int replyStars;
@@ -7,10 +7,7 @@ public class Replies {
     private int secondaryReplyStars;
     private String secondaryReplyAuthor;
 
-    public Replies() {
-    }
-
-    public Replies(int postID, String replyContent, int replyStars, String replyAuthor, String secondaryReplyContent, int secondaryReplyStars, String secondaryReplyAuthor) {
+    public Reply(int postID, String replyContent, int replyStars, String replyAuthor, String secondaryReplyContent, int secondaryReplyStars, String secondaryReplyAuthor) {
         this.postID = postID;
         this.replyContent = replyContent;
         this.replyStars = replyStars;

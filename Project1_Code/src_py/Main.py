@@ -57,7 +57,7 @@ def generate_random_time(start_date, end_date):
 
 def generate_author(in_name):
     Authors.append(in_name)
-    in_a_id = Authors.index(in_name) + 1
+    in_a_id = Authors.index(in_name)
     in_random_id = generate_random_length(18)
     in_random_number = generate_random_length(11)
 
@@ -91,7 +91,7 @@ def import_post_author():
             Authors.append(author)
             Author_id.append(author_id)
             Author_phone.append(author_phone)
-        a_id = Authors.index(author) + 1
+        a_id = Authors.index(author)
 
         if city_name not in Cities:
             Cities.append(city_name)
@@ -122,8 +122,8 @@ def import_post_misc():
         for name in followers:
             if name not in Authors:
                 generate_author(name)
-            a_id = Authors.index(author) + 1
-            follower_id = Authors.index(name) + 1
+            a_id = Authors.index(author)
+            follower_id = Authors.index(name)
 
             cur.execute(ins_follower, (a_id, follower_id))
 
@@ -131,7 +131,7 @@ def import_post_misc():
         for name in favorite:
             if name not in Authors:
                 generate_author(name)
-            favorited_id = Authors.index(name) + 1
+            favorited_id = Authors.index(name)
 
             cur.execute(ins_favorited, (post_id, favorited_id))
 
@@ -139,7 +139,7 @@ def import_post_misc():
         for name in share:
             if name not in Authors:
                 generate_author(name)
-            shared_id = Authors.index(name) + 1
+            shared_id = Authors.index(name)
 
             cur.execute(ins_share, (post_id, shared_id))
 
@@ -147,7 +147,7 @@ def import_post_misc():
         for name in like:
             if name not in Authors:
                 generate_author(name)
-            liked_id = Authors.index(name) + 1
+            liked_id = Authors.index(name)
 
             cur.execute(ins_liked, (post_id, liked_id))
 
@@ -170,17 +170,17 @@ def import_reply():
 
         if reply_content not in reply1:
             reply1.append(reply_content)
-            r_id1 = reply1.index(reply_content) + 1
-            reply_author_id = Authors.index(reply_author) + 1
+            r_id1 = reply1.index(reply_content)
+            reply_author_id = Authors.index(reply_author)
 
             cur.execute(ins_reply, (r_id1, post_id, reply_content, reply_stars, reply_author_id))
 
-        r_id1 = reply1.index(reply_content) + 1
+        r_id1 = reply1.index(reply_content)
 
         if secondary_reply_content not in reply2:
             reply2.append(secondary_reply_content)
-            r_id2 = reply2.index(secondary_reply_content) + 1
-            secondary_reply_author_id = Authors.index(secondary_reply_author) + 1
+            r_id2 = reply2.index(secondary_reply_content)
+            secondary_reply_author_id = Authors.index(secondary_reply_author)
 
             cur.execute(ins_sec_reply, (r_id2, r_id1, secondary_reply_content,
                                         secondary_reply_stars, secondary_reply_author_id))
