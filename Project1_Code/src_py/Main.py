@@ -15,8 +15,8 @@ db = ['localhost', '5432', 'checker', '123456', 'CS307_Project1']
 
 ins_author = """INSERT INTO authors (a_id, author_name, author_registration_time, author_id, author_phone_number) 
         VALUES (%s, %s, %s, %s, %s)"""
-ins_post = """INSERT INTO posts (p_id, a_id, title, content, author_registration_time, posting_time, posting_city)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+ins_post = """INSERT INTO posts (p_id, a_id, title, content, posting_time, posting_city)
+        VALUES (%s, %s, %s, %s, %s, %s)"""
 ins_city = "INSERT INTO cities (city_name, city_country) VALUES (%s, %s)"
 ins_cate = "INSERT INTO category (c_id, category_name) VALUES (%s, %s)"
 ins_post_cate = "INSERT INTO post_category (p_id, c_id) VALUES (%s, %s)"
@@ -99,7 +99,7 @@ def import_post_author():
 
         cur.execute(ins_author, (a_id, author, author_registration_time, author_id, author_phone))
         cur.execute(ins_post,
-                    (str(post_id), str(a_id), title, content, author_registration_time, posting_time, city_name))
+                    (str(post_id), str(a_id), title, content, posting_time, city_name))
 
         cates = post['Category']
         for cate in cates:

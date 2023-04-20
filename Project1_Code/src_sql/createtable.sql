@@ -23,12 +23,9 @@ CREATE TABLE IF NOT EXISTS posts
     a_id integer REFERENCES  authors(a_id),
     title varchar NOT NULL ,
     content varchar NOT NULL ,
-    author_registration_time timestamp REFERENCES authors(author_registration_time) ,
     posting_time timestamp NOT NULL ,
     posting_city varchar NOT NULL
         REFERENCES cities(city_name),
-
-    CONSTRAINT Posts_ch check ( posts.posting_time > posts.author_registration_time )
 );
 
 CREATE TABLE IF NOT EXISTS category
