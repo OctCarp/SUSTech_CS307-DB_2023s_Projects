@@ -24,8 +24,7 @@ CREATE TABLE IF NOT EXISTS posts
     title varchar NOT NULL ,
     content varchar NOT NULL ,
     posting_time timestamp NOT NULL ,
-    posting_city varchar NOT NULL
-        REFERENCES cities(city_name),
+    posting_city varchar NOT NULL REFERENCES cities(city_name)
 );
 
 CREATE TABLE IF NOT EXISTS category

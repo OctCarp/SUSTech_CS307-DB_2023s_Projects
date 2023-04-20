@@ -73,15 +73,15 @@ def generate_author(in_name):
 
 def import_post_author():
     for post in posts:
-        post_id = post['Post ID']
+        post_id = post['Post_ID']
         title = post['Title']
         content = post['Content']
-        posting_time = post['Posting Time']
+        posting_time = post['Posting_Time']
         author = post['Author']
-        author_registration_time = post['Author Registration Time']
-        author_id = post['Author\'s ID']
-        author_phone = post['Author\'s Phone']
-        posting_city = post['Posting City']
+        author_registration_time = post['Author_Registration_Time']
+        author_id = post['Author_ID']
+        author_phone = post['Author_Phone']
+        posting_city = post['Posting_City']
 
         last_comma_index = posting_city.rfind(',')
         city_name = posting_city[:last_comma_index]
@@ -116,9 +116,9 @@ def import_post_author():
 def import_post_misc():
     for post in posts:
         author = post['Author']
-        post_id = post['Post ID']
+        post_id = post['Post_ID']
 
-        followers = post['Authors Followed By']
+        followers = post['Author_Followed_By']
         for name in followers:
             if name not in Authors:
                 generate_author(name)
@@ -127,7 +127,7 @@ def import_post_misc():
 
             cur.execute(ins_follower, (a_id, follower_id))
 
-        favorite = post['Authors Who Favorited the Post']
+        favorite = post['Author_Favorited']
         for name in favorite:
             if name not in Authors:
                 generate_author(name)
@@ -135,7 +135,7 @@ def import_post_misc():
 
             cur.execute(ins_favorited, (post_id, favorited_id))
 
-        share = post['Authors Who Shared the Post']
+        share = post['Author_Shared']
         for name in share:
             if name not in Authors:
                 generate_author(name)
@@ -143,7 +143,7 @@ def import_post_misc():
 
             cur.execute(ins_share, (post_id, shared_id))
 
-        like = post['Authors Who Shared the Post']
+        like = post['Author_Liked']
         for name in like:
             if name not in Authors:
                 generate_author(name)
@@ -154,13 +154,13 @@ def import_post_misc():
 
 def import_reply():
     for reply in replies:
-        post_id = reply['Post ID']
-        reply_content = reply['Reply Content']
-        reply_stars = reply['Reply Stars']
-        reply_author = reply['Reply Author']
-        secondary_reply_content = reply['Secondary Reply Content']
-        secondary_reply_stars = reply['Secondary Reply Stars']
-        secondary_reply_author = reply['Secondary Reply Author']
+        post_id = reply['Post_ID']
+        reply_content = reply['Reply_Content']
+        reply_stars = reply['Reply_Stars']
+        reply_author = reply['Reply_Author']
+        secondary_reply_content = reply['Secondary_Reply_Content']
+        secondary_reply_stars = reply['Secondary_Reply_Stars']
+        secondary_reply_author = reply['Secondary_Reply_Author']
 
         if reply_author not in Authors:
             generate_author(reply_author)
