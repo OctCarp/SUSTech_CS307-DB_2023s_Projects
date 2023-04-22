@@ -41,12 +41,12 @@ CREATE TABLE IF NOT EXISTS post_category
     CONSTRAINT Post_Category_pk PRIMARY KEY (p_id,c_id)
 );
 
-CREATE TABLE IF NOT EXISTS follower
+CREATE TABLE IF NOT EXISTS followed
 (
      a_id integer REFERENCES authors(a_id),
-     follower_id integer REFERENCES authors(a_id),
+     followed_id integer REFERENCES authors(a_id),
 
-    CONSTRAINT Follower_pk PRIMARY KEY (a_id,follower_id)
+    CONSTRAINT Followed_pk PRIMARY KEY (a_id,followed_id)
 );
 
 CREATE TABLE IF NOT EXISTS favorited

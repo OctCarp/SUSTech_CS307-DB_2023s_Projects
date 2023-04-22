@@ -31,7 +31,7 @@ public class Post {
                 ", Author='" + Author + '\'' +
                 ", authorRegistrationTime='" + authorRegistrationTime + '\'' +
                 ", authorID='" + authorID + '\'' +
-                ", authoPhone='" + authorPhone + '\'' +
+                ", authorPhone='" + authorPhone + '\'' +
                 ", authorFollowedBy=" + authorFollowedBy +
                 ", authorFavorite=" + authorFavorited +
                 ", authorShared=" + authorShared +
@@ -123,8 +123,8 @@ public class Post {
         return authorPhone;
     }
 
-    public void setAuthorPhone(String authoPhone) {
-        this.authorPhone = authoPhone;
+    public void setAuthorPhone(String authorPhone) {
+        this.authorPhone = authorPhone;
     }
 
     public List<String> getAuthorFollowedBy() {

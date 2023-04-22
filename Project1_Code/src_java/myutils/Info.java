@@ -21,7 +21,6 @@ public class Info {
     public static String pwd;
     public static String dropCreate;
     public static String disTrigger;
-    public static String createAuthorTest;
     public static List<Post> posts;
     public static List<Reply> replies;
 
@@ -30,7 +29,7 @@ public class Info {
     public static String iCity = "INSERT INTO cities (city_name, city_country) VALUES (?, ?)";
     public static String iCate = "INSERT INTO category (c_id, category_name) VALUES (?, ?)";
     public static String iPostCate = "INSERT INTO post_category (p_id, c_id) VALUES (?, ?)";
-    public static String iFollower = "INSERT INTO follower (a_id, follower_id) VALUES (?, ?)";
+    public static String iFollowed = "INSERT INTO followed (a_id, followed_id) VALUES (?, ?)";
     public static String iFavorited = "INSERT INTO favorited (p_id, favorited_id) VALUES (?, ?)";
     public static String iLiked = "INSERT INTO liked (p_id, liked_id) VALUES (?, ?)";
     public static String iShare = "INSERT INTO shared (p_id, shared_id) VALUES (?, ?)";

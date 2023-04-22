@@ -15,7 +15,7 @@ public class Importer {
     PreparedStatement pCity;
     PreparedStatement pCate;
     PreparedStatement pPostCate;
-    PreparedStatement pFollower;
+    PreparedStatement pFollowed;
     PreparedStatement pFavorited;
     PreparedStatement pLiked;
     PreparedStatement pShare;
@@ -52,7 +52,7 @@ public class Importer {
             pPost.executeBatch();
             pPostCate.executeBatch();
             pFavorited.executeBatch();
-            pFollower.executeBatch();
+            pFollowed.executeBatch();
             pShare.executeBatch();
             pLiked.executeBatch();
             pReply.executeBatch();
@@ -74,7 +74,7 @@ public class Importer {
                 pCity = conn.prepareStatement(Info.iCity);
                 pCate = conn.prepareStatement(Info.iCate);
                 pPostCate = conn.prepareStatement(Info.iPostCate);
-                pFollower = conn.prepareStatement(Info.iFollower);
+                pFollowed = conn.prepareStatement(Info.iFollowed);
                 pFavorited = conn.prepareStatement(Info.iFavorited);
                 pLiked = conn.prepareStatement(Info.iLiked);
                 pShare = conn.prepareStatement(Info.iShare);
@@ -151,7 +151,7 @@ public class Importer {
             for (String follower : p.getAuthorFollowedBy()) {
                 int f_id = ambAuthor(follower);
 
-                Ins.follow_bat(pFollower, a_id, f_id);
+                Ins.follow_bat(pFollowed, a_id, f_id);
             }
             for (String sharer : p.getAuthorShared()) {
                 int s_id = ambAuthor(sharer);

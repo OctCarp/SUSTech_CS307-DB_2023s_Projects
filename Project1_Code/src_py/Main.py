@@ -4,14 +4,16 @@ import random
 from datetime import datetime, timedelta
 import time
 
-post_file = 'resource/posts.json'
+init_file = './src_sql/drop_create.sql'
+init_sql = open(init_file).read()
+post_file = './resource/posts.json'
 with open(post_file) as f:
     posts = json.load(f)
-reply_file = 'resource/replies.json'
+reply_file = './resource/replies.json'
 with open(reply_file) as f:
     replies = json.load(f)
 
-db = ['localhost', '5432', 'checker', '123456', 'CS307_Project1']
+db = ['localhost', '5432', 'checker', '123456', 'CS307_Project1_P']
 
 ins_author = """INSERT INTO authors (a_id, author_name, author_registration_time, author_id, author_phone_number) 
         VALUES (%s, %s, %s, %s, %s)"""
@@ -20,7 +22,7 @@ ins_post = """INSERT INTO posts (p_id, a_id, title, content, posting_time, posti
 ins_city = "INSERT INTO cities (city_name, city_country) VALUES (%s, %s)"
 ins_cate = "INSERT INTO category (c_id, category_name) VALUES (%s, %s)"
 ins_post_cate = "INSERT INTO post_category (p_id, c_id) VALUES (%s, %s)"
-ins_follower = "INSERT INTO follower (a_id, follower_id) VALUES (%s, %s)"
+ins_followed = "INSERT INTO followed (a_id, followed_id) VALUES (%s, %s)"
 ins_favorited = "INSERT INTO favorited (p_id, favorited_id) VALUES (%s, %s)"
 ins_liked = "INSERT INTO liked (p_id, liked_id) VALUES (%s, %s)"
 ins_share = "INSERT INTO shared (p_id, shared_id) VALUES (%s, %s)"
@@ -41,6 +43,13 @@ reply2 = []
 Start_Date = datetime.strptime('2000-01-01 00:00:00', '%Y-%m-%d %H:%M:%S')
 End_Date = datetime.strptime('2022-12-31 23:59:59', '%Y-%m-%d %H:%M:%S')
 
+def init_table():
+    init_conn = psycopg2.connect(host=db[0], port=db[1], user=db[2], password=db[3], database=db[4])
+    init_cur = init_conn.cursor()
+    init_cur.execute(init_sql)
+    init_conn.commit()
+    init_cur.close()
+    init_conn.close()
 
 def generate_random_length(length):
     rand_num = ''.join([str(random.randint(0, 9)) for _ in range(length)])
@@ -118,14 +127,14 @@ def import_post_misc():
         author = post['Author']
         post_id = post['Post_ID']
 
-        followers = post['Author_Followed_By']
-        for name in followers:
+        followed = post['Author_Followed_By']
+        for name in followed:
             if name not in Authors:
                 generate_author(name)
             a_id = Authors.index(author)
-            follower_id = Authors.index(name)
+            followed_id = Authors.index(name)
 
-            cur.execute(ins_follower, (a_id, follower_id))
+            cur.execute(ins_followed, (a_id, followed_id))
 
         favorite = post['Author_Favorited']
         for name in favorite:
@@ -187,6 +196,8 @@ def import_reply():
 
 
 if __name__ == '__main__':
+    init_table()
+
     start_time = time.time()
 
     conn = psycopg2.connect(host=db[0], port=db[1], user=db[2], password=db[3], database=db[4])

@@ -153,7 +153,7 @@ class Transaction extends PrepareStmt {
 
             closeConnect();
         } catch (SQLException se) {
-            System.err.println(se);
+            System.err.println(se.getMessage());
         }
 
         endTime = System.currentTimeMillis();
@@ -193,7 +193,7 @@ class Batch extends PrepareStmt {
 
             closeConnect();
         } catch (SQLException se) {
-            System.err.println(se);
+            System.err.println(se.getMessage());
         }
 
         endTime = System.currentTimeMillis();
@@ -219,7 +219,7 @@ class Batch extends PrepareStmt {
                 pStmt.clearBatch();
             }
         } catch (SQLException se) {
-            System.err.println(se);
+            System.err.println(se.getMessage());
         }
     }
 }

@@ -143,7 +143,8 @@ abstract class NormalStmt extends AbstractLoaders {
                 }
                 conn.close();
                 conn = null;
-            } catch (Exception ignored) {
+            } catch (SQLException se) {
+                System.err.println(se.getMessage());
             }
         }
     }
@@ -162,7 +163,7 @@ abstract class PrepareStmt extends AbstractLoaders {
                 conn.close();
                 conn = null;
             } catch (SQLException se) {
-                System.err.println(se);
+                System.err.println(se.getMessage());
             }
         }
     }
@@ -187,7 +188,7 @@ abstract class PrepareStmt extends AbstractLoaders {
             pStmt.setString(5, phone);
             pStmt.executeUpdate();
         } catch (SQLException se) {
-            System.err.println(se);
+            System.err.println(se.getMessage());
         }
     }
 }

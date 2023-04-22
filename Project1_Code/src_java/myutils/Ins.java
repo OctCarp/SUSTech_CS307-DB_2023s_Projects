@@ -11,7 +11,7 @@ public class Ins {
             pre.setString(2, cityCountry[1]);
             pre.addBatch();
         } catch (SQLException se) {
-            System.err.println(se);
+            System.err.println(se.getMessage());
         }
     }
 
@@ -24,7 +24,7 @@ public class Ins {
             pre.setString(5, phone);
             pre.addBatch();
         } catch (SQLException se) {
-            System.err.println(se);
+            System.err.println(se.getMessage());
         }
     }
 
@@ -38,7 +38,7 @@ public class Ins {
             pre.setString(6, post_city);
             pre.addBatch();
         } catch (SQLException se) {
-            System.err.println(se);
+            System.err.println(se.getMessage());
         }
 
     }
@@ -49,7 +49,7 @@ public class Ins {
             pre.setString(2, name);
             pre.addBatch();
         } catch (SQLException se) {
-            System.err.println(se);
+            System.err.println(se.getMessage());
         }
     }
 
@@ -59,7 +59,7 @@ public class Ins {
             pre.setInt(2, c_id);
             pre.addBatch();
         } catch (SQLException se) {
-            System.err.println(se);
+            System.err.println(se.getMessage());
         }
     }
 
@@ -69,7 +69,7 @@ public class Ins {
             pre.setInt(2, fa_id);
             pre.addBatch();
         } catch (SQLException se) {
-            System.err.println(se);
+            System.err.println(se.getMessage());
         }
 
     }
@@ -80,7 +80,7 @@ public class Ins {
             pre.setInt(2, aa_id);
             pre.addBatch();
         } catch (SQLException se) {
-            System.err.println(se);
+            System.err.println(se.getMessage());
         }
 
     }
@@ -94,7 +94,7 @@ public class Ins {
             pre.setInt(5, r_author);
             pre.addBatch();
         } catch (SQLException se) {
-            System.err.println(se);
+            System.err.println(se.getMessage());
         }
     }
 }
