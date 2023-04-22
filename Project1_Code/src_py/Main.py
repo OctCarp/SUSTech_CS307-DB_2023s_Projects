@@ -43,6 +43,7 @@ reply2 = []
 Start_Date = datetime.strptime('2000-01-01 00:00:00', '%Y-%m-%d %H:%M:%S')
 End_Date = datetime.strptime('2022-12-31 23:59:59', '%Y-%m-%d %H:%M:%S')
 
+
 def init_table():
     init_conn = psycopg2.connect(host=db[0], port=db[1], user=db[2], password=db[3], database=db[4])
     init_cur = init_conn.cursor()
@@ -50,6 +51,7 @@ def init_table():
     init_conn.commit()
     init_cur.close()
     init_conn.close()
+
 
 def generate_random_length(length):
     rand_num = ''.join([str(random.randint(0, 9)) for _ in range(length)])
