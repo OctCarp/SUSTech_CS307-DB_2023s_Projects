@@ -1,3 +1,5 @@
+package models;
+
 import java.util.List;
 
 public class Post {
@@ -19,7 +21,7 @@ public class Post {
 
     @Override
     public String toString() {
-        return "Post{" +
+        return "models.Post{" +
                 "postID=" + postID +
                 ", title='" + title + '\'' +
                 ", category=" + category +

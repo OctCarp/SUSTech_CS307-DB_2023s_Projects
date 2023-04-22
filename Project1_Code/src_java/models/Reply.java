@@ -1,3 +1,5 @@
+package models;
+
 public class Reply {
     private int postID;
     private String replyContent;

@@ -1,3 +1,8 @@
+package myutils;
+
+import models.Post;
+import models.Reply;
+
 import com.alibaba.fastjson.JSON;
 
 import java.io.*;
@@ -16,8 +21,9 @@ public class Info {
     public static String pwd;
     public static String dropCreate;
     public static String disTrigger;
-    static List<Post> posts;
-    static List<Reply> replies;
+    public static String createAuthorTest;
+    public static List<Post> posts;
+    public static List<Reply> replies;
 
     public static String iAuthor = "INSERT INTO authors (a_id, author_name, author_registration_time, author_id, author_phone_number) VALUES (?, ?, ?, ?, ?)";
     public static String iPost = "INSERT INTO posts (p_id, a_id, title, content, posting_time, posting_city) VALUES (?, ?, ?, ?, ?, ?)";
@@ -34,13 +40,14 @@ public class Info {
     private static void readFiles() {
         Properties prop = new Properties();
         try {
-            prop.load(new InputStreamReader(new FileInputStream("resource/paths.properties")));
+            prop.load(new InputStreamReader(new FileInputStream("./resource/paths.properties")));
             url = prop.getProperty("dbURL");
             user = prop.getProperty("username");
             pwd = prop.getProperty("password");
 
             posts = JSON.parseArray(Files.readString(Path.of(prop.getProperty("postF"))), Post.class);
             replies = JSON.parseArray(Files.readString(Path.of(prop.getProperty("replyF"))), Reply.class);
+
             dropCreate = Files.readString(Path.of(prop.getProperty("dropCreateF")));
             disTrigger = Files.readString(Path.of(prop.getProperty("disTriggersF")));
         } catch (IOException e) {

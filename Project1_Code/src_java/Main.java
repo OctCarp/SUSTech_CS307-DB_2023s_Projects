@@ -1,16 +1,19 @@
+import myutils.Info;
+
 public class Main {
     public static void main(String[] args) {
         Info.infoInit();
 
-        long startTime = System.currentTimeMillis();
         normalImport();
-        long dur = System.currentTimeMillis() - startTime;
-
-        System.out.println(dur / 1000 + "." + dur % 1009 + "s");
     }
 
     private static void normalImport() {
+        long startTime = System.currentTimeMillis();
+
         Importer im = new Importer();
         im.batchInsert();
+
+        long dur = System.currentTimeMillis() - startTime;
+        System.out.printf("%d.%ds\n", dur / 1000, dur % 1000);
     }
 }
