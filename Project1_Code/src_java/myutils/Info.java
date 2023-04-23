@@ -20,6 +20,7 @@ public class Info {
     public static String user;
     public static String pwd;
     public static String dropCreate;
+    public static String enTrigger;
     public static String disTrigger;
     public static List<Post> posts;
     public static List<Reply> replies;
@@ -48,6 +49,7 @@ public class Info {
             replies = JSON.parseArray(Files.readString(Path.of(prop.getProperty("replyF"))), Reply.class);
 
             dropCreate = Files.readString(Path.of(prop.getProperty("dropCreateF")));
+            enTrigger = Files.readString(Path.of(prop.getProperty("enTriggersF")));
             disTrigger = Files.readString(Path.of(prop.getProperty("disTriggersF")));
         } catch (IOException e) {
             System.err.println("can not find db user file");

@@ -58,6 +58,7 @@ public class Importer {
             pReply.executeBatch();
             pSecReply.executeBatch();
 
+            conn.createStatement().execute(Info.enTrigger);
             conn.commit();
 
             MyUt.closeConnect(conn);
