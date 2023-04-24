@@ -10,12 +10,9 @@ public class Main {
     }
 
     private static void normalImport() {
-        long startTime = System.currentTimeMillis();
-
         Importer im = new Importer();
-        im.batchInsert();
+        long dur = im.batchInsert();
 
-        long dur = System.currentTimeMillis() - startTime;
         System.out.printf("%d.%ds\n", dur / 1000, dur % 1000);
     }
 

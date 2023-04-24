@@ -30,8 +30,11 @@ public class Importer {
     List<String> categories = new ArrayList<>();
     List<String> authorIDs = new ArrayList<>();
 
-    public void batchInsert() {
+    public long batchInsert() {
+        long dur = -1;
         try {
+            long startTime = System.currentTimeMillis();
+
             conn = MyUt.getConnection();
             MyUt.initDatabase(conn);
 
@@ -62,9 +65,13 @@ public class Importer {
             conn.commit();
 
             MyUt.closeConnect(conn);
+
+            dur = System.currentTimeMillis() - startTime;
         } catch (Exception e) {
             System.err.println(e);
         }
+
+        return dur;
     }
 
     private void prepare() {
@@ -173,15 +180,16 @@ public class Importer {
     }
 
     private void reply() {
-        int p_id = 0, r1_i = 0, r2_i = 0;
+        int p_id = 0, r1_i = -1, r2_i = -1;
 
         String r1_c = "init", r1a_name = "";
         for (Reply reply : replies) {
             if ((p_id == reply.getPostID() && r1_c.equals(reply.getReplyContent()) && r1a_name.equals(reply.getReplyAuthor()))) {
                 int r2a_id = ambAuthor(reply.getSecondaryReplyAuthor());
 
-                Ins.reply_bat(pSecReply, r2_i++, r1_i, r1_c, reply.getSecondaryReplyStars(), r2a_id);
+                Ins.reply_bat(pSecReply, ++r2_i, r1_i, r1_c, reply.getSecondaryReplyStars(), r2a_id);
             } else {
+                ++r1_i;
                 p_id = reply.getPostID();
                 r1_c = reply.getReplyContent();
                 r1a_name = reply.getReplyAuthor();
@@ -190,8 +198,7 @@ public class Importer {
                 int r2a_id = ambAuthor(reply.getSecondaryReplyAuthor());
 
                 Ins.reply_bat(pReply, r1_i, p_id, r1_c, reply.getReplyStars(), r1a_id);
-                Ins.reply_bat(pSecReply, r2_i++, r1_i, reply.getSecondaryReplyContent(), reply.getSecondaryReplyStars(), r2a_id);
-                ++r1_i;
+                Ins.reply_bat(pSecReply, ++r2_i, r1_i, reply.getSecondaryReplyContent(), reply.getSecondaryReplyStars(), r2a_id);
             }
         }
     }

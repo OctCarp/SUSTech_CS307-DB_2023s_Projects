@@ -10,11 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractLoaders {
-
-    final int BATCH_SIZE = 1000;
-
-    long startTime, endTime;
-    int cnt = 0;
+    int BATCH_SIZE;
+    int cnt;
+    long startTime;
 
     Connection conn;
     List<Post> posts;
@@ -27,17 +25,20 @@ public abstract class AbstractLoaders {
     AbstractLoaders() {
         posts = Info.posts;
         replies = Info.replies;
+
+        BATCH_SIZE = 1000;
+        cnt = 0;
     }
 
     abstract void insertAuthor(int a_id, String author, Timestamp time, String author_id, String phone);
 
-    abstract void testStart();
+    abstract long testStart();
 
     abstract void closeConnect();
 
-    void printMessage() {
+    void printMessage(long speed) {
         System.out.printf("%s:\n%d records successfully loaded\n", this, cnt);
-        System.out.printf("Loading speed : %d records/s\n\n", (cnt * 1000L) / (endTime - startTime));
+        System.out.printf("Loading speed : %d records/s\n\n", speed);
     }
 
     void getTestConnection() {

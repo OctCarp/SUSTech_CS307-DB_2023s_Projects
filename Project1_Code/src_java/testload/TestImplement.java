@@ -8,10 +8,11 @@ import java.sql.Timestamp;
 public class TestImplement {
     public static void startTestMain() {
         TestInfo.init();
-        testLoader();
+        testLoaders();
+        //testPersistent(10);
     }
 
-    private static void testLoader() {
+    private static void testLoaders() {
         AbstractLoaders t1 = new Awful();
         t1.testStart();
         AbstractLoaders t2 = new Connect();
@@ -23,6 +24,16 @@ public class TestImplement {
         AbstractLoaders t5 = new Batch();
         t5.testStart();
     }
+
+    private static void testPersistent(int times) {
+        long totalSpeed = 0L;
+        for (int i = 1; i <= times; i++) {
+            System.out.printf("This is loop %d.\n", i);
+            AbstractLoaders t = new Batch();
+            totalSpeed += t.testStart();
+        }
+        System.out.printf("The %d loops average speed is %d.", times, totalSpeed / times);
+    }
 }
 
 class Awful extends NormalStmt {
@@ -32,14 +43,16 @@ class Awful extends NormalStmt {
     }
 
     @Override
-    void testStart() {
+    long testStart() {
         clearDataInit();
 
         startTime = System.currentTimeMillis();
         insLogic();
-        endTime = System.currentTimeMillis();
 
-        printMessage();
+        long speed = cnt * 1000L / (System.currentTimeMillis() - startTime);
+        printMessage(speed);
+
+        return speed;
     }
 
     @Override
@@ -70,7 +83,7 @@ class Connect extends NormalStmt {
     }
 
     @Override
-    void testStart() {
+    long testStart() {
         clearDataInit();
 
         startTime = System.currentTimeMillis();
@@ -79,9 +92,10 @@ class Connect extends NormalStmt {
         insLogic();
         closeConnect();
 
-        endTime = System.currentTimeMillis();
+        long speed = cnt * 1000L / (System.currentTimeMillis() - startTime);
+        printMessage(speed);
 
-        printMessage();
+        return speed;
     }
 
     @Override
@@ -106,7 +120,7 @@ class Prepare extends PrepareStmt {
     }
 
     @Override
-    void testStart() {
+    long testStart() {
         clearDataInit();
 
         startTime = System.currentTimeMillis();
@@ -116,9 +130,10 @@ class Prepare extends PrepareStmt {
         insLogic();
         closeConnect();
 
-        endTime = System.currentTimeMillis();
+        long speed = cnt * 1000L / (System.currentTimeMillis() - startTime);
+        printMessage(speed);
 
-        printMessage();
+        return speed;
     }
 
     @Override
@@ -138,7 +153,7 @@ class Transaction extends PrepareStmt {
     }
 
     @Override
-    void testStart() {
+    long testStart() {
         clearDataInit();
 
         startTime = System.currentTimeMillis();
@@ -156,9 +171,10 @@ class Transaction extends PrepareStmt {
             System.err.println(se.getMessage());
         }
 
-        endTime = System.currentTimeMillis();
+        long speed = cnt * 1000L / (System.currentTimeMillis() - startTime);
+        printMessage(speed);
 
-        printMessage();
+        return speed;
     }
 
     @Override
@@ -172,13 +188,22 @@ class Transaction extends PrepareStmt {
 }
 
 class Batch extends PrepareStmt {
-    @Override
-    public String toString() {
-        return "Batch Loader";
+    public Batch() {
+        super();
+    }
+
+    public Batch(int size) {
+        this();
+        BATCH_SIZE = size;
     }
 
     @Override
-    void testStart() {
+    public String toString() {
+        return String.format("Batch %d Loader", BATCH_SIZE);
+    }
+
+    @Override
+    long testStart() {
         clearDataInit();
 
         startTime = System.currentTimeMillis();
@@ -189,6 +214,7 @@ class Batch extends PrepareStmt {
 
             conn.setAutoCommit(false);
             insLogic();
+            pStmt.executeBatch();
             conn.commit();
 
             closeConnect();
@@ -196,9 +222,10 @@ class Batch extends PrepareStmt {
             System.err.println(se.getMessage());
         }
 
-        endTime = System.currentTimeMillis();
+        long speed = cnt * 1000L / (System.currentTimeMillis() - startTime);
+        printMessage(speed);
 
-        printMessage();
+        return speed;
     }
 
     @Override
