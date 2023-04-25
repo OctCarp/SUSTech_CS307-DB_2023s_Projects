@@ -5,8 +5,8 @@ public class Main {
     public static void main(String[] args) {
         Info.infoInit();
 
-//        normalImport();
-        testLoader();
+        normalImport();
+//        testLoader();
     }
 
     private static void normalImport() {

@@ -4,13 +4,12 @@ import random
 from datetime import datetime, timedelta
 import time
 
-init_file = './src_sql/drop_create.sql'
-init_sql = open(init_file).read()
-post_file = './resource/posts.json'
-with open(post_file) as f:
+init_sql = open('../src_sql/drop_create.sql').read()
+dis_triggers = open('../src_sql/disable_triggers.sql').read()
+en_triggers = open('../src_sql/enable_triggers.sql').read()
+with open('../resource/posts.json') as f:
     posts = json.load(f)
-reply_file = './resource/replies.json'
-with open(reply_file) as f:
+with open('../resource/replies.json') as f:
     replies = json.load(f)
 
 db = ['localhost', '5432', 'checker', '123456', 'CS307_Project1_P']
@@ -205,9 +204,11 @@ if __name__ == '__main__':
     conn = psycopg2.connect(host=db[0], port=db[1], user=db[2], password=db[3], database=db[4])
     cur = conn.cursor()
 
+    # cur.execute(dis_triggers)
     import_post_author()
     import_post_misc()
     import_reply()
+    # cur.execute(en_triggers)
 
     conn.commit()
     cur.close()
