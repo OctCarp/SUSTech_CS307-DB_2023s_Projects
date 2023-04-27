@@ -54,6 +54,11 @@
 - 项目所用的 DBSM 为 [`PostgreSQL 15.2`](https://www.postgresql.org/)，运行前请先创建超级用户、用户名 `checker` 密码 `123456`，数据库 `CS307_Project_J`、`CS307_Project_P`、`CS307_Project_Test`，分别用于 Java 、Python、测试的数据库连接
 - 本项目的 Python 导入脚本源文件为 [`src_py/Main.py`](../../Project1_Code/src_py/Main.py)， Java 为 [`src_java/Main.java`](../../Project1_Code/src_java/Main.java) 
 - 开发与测试的操作系统为 Windows 10 Home 22H2，Java `JDK 17.0.3`，Python 版本为 `3.10.11`
+- 为了方便读取，我们修改了 `.json` 文件个别信息字段的表述方式：使用 `_`代替空格，删除了 `'s`，改变表述方式，如： 
+  - `"Post ID"` → `"Post_ID"`
+  - `"Author's ID"` → `"Author_ID"`
+  - `"Authors Who Favorited the Post"` → `"Author_Favorited"`
+
 - 使用 IDE 时，请将 [`Project1_Code/`](../../Project1_Code/) 文件夹以项目打开，把 [`lib/`](../../Project1_Code/lib/) 文件夹作为库导入，项目中导入程序使用的路径均为**相对路径**，若出现路径报错，请用户修改以下文件的中的路径字段：
 
   - [`src_py/Main.py`](../../Project1_Code/src_py/Main.py)
@@ -232,6 +237,7 @@ void printMessage(long speed) {
 
 - 为唯一的用户名生成唯一的的用户 ID 与手机号码使用了 `Arraylist`，以及所有相关的生成 ID 的操作都要顺序执行，线程不安全，能否存在其他解决方案使实现数据库多线程操作？
 - 若要实现不同 DBMS（如 `MySQL`）之间的插入效率比较，除了驱动和链接改变外，关闭触发器等的 `DDL` 方言也要做出改变
+- 使用 `HashMap` 来对应各种 ID 与名称？结合 `Project2` 的要求可以进行相关的建表和导入修改 
 
 ------
 

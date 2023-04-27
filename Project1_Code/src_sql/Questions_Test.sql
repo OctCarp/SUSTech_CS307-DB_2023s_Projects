@@ -17,7 +17,7 @@ FROM posts;
 SELECT count(*)
 FROM liked ls
 WHERE ls.p_id = 163;
--- Answer: 28
+-- Answer: 45
 
 -- How many likes in post with Post ID 28?
 SELECT count(*)
@@ -190,7 +190,7 @@ WHERE p.posting_time BETWEEN '2022-01-01 00:00:00' AND '2022-12-31 23:59:59';
 
 
 /*
- by GUo
+ by GUO
 */
 
 select count(*) from Posts;
