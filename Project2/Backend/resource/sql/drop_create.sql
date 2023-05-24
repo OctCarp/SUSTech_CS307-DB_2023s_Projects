@@ -98,3 +98,62 @@ CREATE TABLE IF NOT EXISTS sub_replies
         check ( r2_stars >= 0 ),
     r2_a_id    integer REFERENCES authors (a_id)
 );
+
+CREATE OR REPLACE FUNCTION update_view_count_byreply()
+    RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE post_views
+    SET view_count = view_count + 3
+    WHERE p_id = NEW.p_id;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER increment_view_count1
+    AFTER INSERT ON replies
+    FOR EACH ROW
+EXECUTE FUNCTION update_view_count_byreply();
+
+CREATE OR REPLACE FUNCTION update_view_count_bysubreply()
+    RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE post_views
+    SET view_count = view_count + 2
+    WHERE p_id = (
+        SELECT p_id
+        FROM replies
+        WHERE r_id1 = NEW.r_id1
+    );
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER increment_view_count2
+    AFTER INSERT ON sub_replies
+    FOR EACH ROW
+EXECUTE FUNCTION update_view_count_bysubreply();
+
+CREATE OR REPLACE FUNCTION update_view_count_fsl()
+    RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE post_views
+    SET view_count = view_count + 2
+    WHERE p_id = NEW.p_id;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER increment_view_count3
+    AFTER INSERT ON favorited
+    FOR EACH ROW
+EXECUTE FUNCTION update_view_count_fsl();
+
+CREATE TRIGGER increment_view_count4
+    AFTER INSERT ON shared
+    FOR EACH ROW
+EXECUTE FUNCTION update_view_count_fsl();
+
+CREATE TRIGGER increment_view_count5
+    AFTER INSERT ON liked
+    FOR EACH ROW
+EXECUTE FUNCTION update_view_count_fsl();

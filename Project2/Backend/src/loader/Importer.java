@@ -48,7 +48,7 @@ public class Importer {
             posts = Info.posts;
             replies = Info.replies;
 
-            conn.createStatement().execute(Info.disTrigger);
+            //conn.createStatement().execute(Info.disTrigger);
 
             conn.setAutoCommit(false);
             postIns();
@@ -66,7 +66,7 @@ public class Importer {
             pReply.executeBatch();
             pSecReply.executeBatch();
 
-            conn.createStatement().execute(Info.enTrigger);
+            //conn.createStatement().execute(Info.enTrigger);
             conn.commit();
 
             closeConnect(conn);
