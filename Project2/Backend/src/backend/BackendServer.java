@@ -29,10 +29,14 @@ public class BackendServer {
         post("/normal/send/reply", SendHandler::sendReply);
         post("/normal/send/reply2", SendHandler::sendReply2);
 
-
         post("/view/post", ViewHandler::getPostById);
         post("/view/reply", ViewHandler::getReplyById);
         post("/view/reply2", ViewHandler::getReply2ById);
+        post("/view/all_posts", ViewHandler::getAllPost);
+        post("/view/all_posts_obt", ViewHandler::getAllPostobt);
+        post("/view/post_replies", ViewHandler::getpostreplies);
+        post("/view/reply_replies", ViewHandler::getreplyreplies);
+        post("/view/hot_list", ViewHandler::gethotlist);
 
 
         after((Request request, Response response) -> {

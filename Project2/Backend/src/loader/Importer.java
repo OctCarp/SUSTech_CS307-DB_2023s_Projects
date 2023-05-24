@@ -22,6 +22,7 @@ public class Importer {
     Connection conn;
     PreparedStatement pAuthor;
     PreparedStatement pPost;
+    PreparedStatement pPostview;
     PreparedStatement pPostCate;
     PreparedStatement pFollowed;
     PreparedStatement pFavorited;
@@ -56,6 +57,7 @@ public class Importer {
 
             pAuthor.executeBatch();
             pPost.executeBatch();
+            pPostview.executeBatch();
             pPostCate.executeBatch();
             pFavorited.executeBatch();
             pFollowed.executeBatch();
@@ -97,11 +99,12 @@ public class Importer {
                 authorIDs.add(identity);
                 phoneNumbers.add(phone);
 
-                Ins.author_bat(pAuthor, a_id, a_name, identity, "1", phone, Timestamp.valueOf(p.getAuthorRegistrationTime()));
+                Ins.author_bat(pAuthor, a_id, a_name, String.valueOf(a_id), "1", phone, Timestamp.valueOf(p.getAuthorRegistrationTime()));
             }
             p.setAID(a_id);
 
             Ins.post_bat(pPost, p_id, a_id, title, content, Timestamp.valueOf(postTime), postingCityCountry);
+            Ins.post_view_bat(pPostview, p_id, 0);
 
             for (String cate : p.getCategory()) {
                 Ins.post_cate_bat(pPostCate, p_id, cate);
@@ -227,6 +230,10 @@ public class Importer {
                 pPost = conn.prepareStatement(
                         "INSERT INTO posts (p_id, a_id, title, content, p_time, p_city)" +
                                 "VALUES (?, ?, ?, ?, ?, ?)"
+                );
+                pPostview = conn.prepareStatement(
+                        "INSERT INTO post_views (p_id, view_count)" +
+                                "VALUES (?, ?)"
                 );
                 pPostCate = conn.prepareStatement(
                         "INSERT INTO p_cate (p_id, cate) VALUES (?, ?)");

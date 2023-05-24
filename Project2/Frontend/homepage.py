@@ -6,6 +6,7 @@ import square as sqr
 import comm
 from config import config
 from urllib.parse import urljoin
+from users import login_mode
 
 
 def homepage_main(a_id):
@@ -57,6 +58,42 @@ def homepage_main(a_id):
             sqr.view_mode(a_id)
         elif op == 'x':
             flag = False
+        elif op == 'q':
+            u.exiting()
+        else:
+            print("<Wrong Selection>")
+
+
+def homepage_main_anonymous():
+
+    a_id = -2
+    flag = True
+    while flag:
+        u.clear()
+        print("Hello! Anonymous")
+        print("============================================================")
+        print("|                          [Views]                         |")
+        print("|        Please Enter Number To Select Your View           |")
+        print("|----------------------------------------------------------|")
+        print("|                     1. My Replies                        |")
+        print("|                     2. My Sub Replies                    |")
+        print("|                     s. Square                            |")
+        print("|----------------------------------------------------------|")
+        print("|          x. back       l. Log in        q. Quit          |")
+        print("============================================================")
+        print(">>> ", end="")
+        op = input()
+        if op == '1':
+            my_reply_list(a_id)
+        elif op == '2':
+            my_reply2_list(a_id)
+        elif op == 's':
+            sqr.view_mode(a_id)
+        elif op == 'x':
+            flag = False
+        elif op == 'l':
+            a_id = login_mode()
+            homepage_main(a_id)
         elif op == 'q':
             u.exiting()
         else:

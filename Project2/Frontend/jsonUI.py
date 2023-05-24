@@ -58,3 +58,6 @@ def r2_idc_ui(r2):
 
 def author_idn_ui(a):
     print("|%-9s|%s" % (a['id'], a['con']))
+
+
+

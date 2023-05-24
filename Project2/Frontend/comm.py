@@ -1,5 +1,7 @@
 import json
 import time
+
+import square
 import square as sqr
 import jsonUI as ui
 import requests
@@ -112,6 +114,9 @@ def get_post(p_id, va_id):
             if op == '1':
                 if va_id == "-1":
                     print("<No Permission> Please login")
+                elif va_id == "-2":
+                    print("Anonymous user can only reply posts")
+                    sqr.post_op_anonymous(p_id, va_id)
                 else:
                     sqr.post_op(p_id, result['a_id'], va_id)
             else:
@@ -146,6 +151,9 @@ def get_reply(r_id1, va_id):
             if op == '1':
                 if va_id == "-1":
                     print("<No Permission> Please login")
+                elif va_id == "-2":
+                    print("Anonymous user can only reply replies")
+                    sqr.reply_op_anonymous(r_id1, va_id)
                 else:
                     sqr.reply_op(result['ori_id'], r_id1, result['a_id'], va_id)
             else:
@@ -155,6 +163,62 @@ def get_reply(r_id1, va_id):
             print("<Not Found> No such Post ID")
     else:
         print("<Wrong Format> Reply ID is not valid")
+
+    input("<End> Press Enter to continue...")
+
+
+def get_post_replies(va_id, p_id):
+    p_id = str(p_id)
+    va_id = str(va_id)
+    if p_id.isdigit():
+        result = requests.post(
+            urljoin(config['base'], '/view/post_replies'), headers={
+                'p_id': p_id,
+                'va_id': va_id
+            }
+        ).json()
+
+        if result:
+            print("=============================================================")
+            print("|Reply ID|Content")
+            print("--------+----------------------------------------------------")
+
+            for res in result:
+                ui.post_idc_ui(res)
+            print("=============================================================")
+        else:
+            print("<Not Found> No reply available.")
+
+    else:
+        print("<Wrong Format> Post ID is not valid")
+
+    input("<End> Press Enter to continue...")
+
+
+def get_reply_replies(va_id, r_id1):
+    r_id1 = str(r_id1)
+    va_id = str(va_id)
+    if r_id1.isdigit():
+        result = requests.post(
+            urljoin(config['base'], '/view/reply_replies'), headers={
+                'r_id1': r_id1,
+                'va_id': va_id
+            }
+        ).json()
+
+        if result:
+            print("=============================================================")
+            print("|Sub Reply ID|Content")
+            print("--------+----------------------------------------------------")
+
+            for res in result:
+                ui.r2_idc_ui(res)
+            print("=============================================================")
+        else:
+            print("<Not Found> No sub reply available.")
+
+    else:
+        print("<Wrong Format> reply ID is not valid")
 
     input("<End> Press Enter to continue...")
 
@@ -188,6 +252,69 @@ def get_reply2(r_id2, va_id):
         print("<Wrong Format> Sub Reply ID is not valid")
 
     input("<End> Press Enter to continue...")
+
+
+def get_all_post(page_num, va_id):
+    result = requests.post(
+        urljoin(config['base'], '/view/all_posts'), headers={
+            'page_num': str(page_num),
+            'va_id': str(va_id)
+        }
+    ).json()
+
+    if result:
+        print("=============================================================")
+        print("|Post ID|Title")
+        print("--------+----------------------------------------------------")
+
+        for res in result:
+            ui.post_idc_ui(res)
+        print("=============================================================")
+    else:
+        print("<Not Found> No posts available.")
+
+    square.change_page(page_num, va_id)
+
+
+def get_all_post_obt(page_num, va_id):
+    result = requests.post(
+        urljoin(config['base'], '/view/all_posts_obt'), headers={
+            'page_num': str(page_num),
+            'va_id': str(va_id)
+        }
+    ).json()
+
+    if result:
+        print("=============================================================")
+        print("|Post ID|Title")
+        print("--------+----------------------------------------------------")
+
+        for res in result:
+            ui.post_idc_ui(res)
+        print("=============================================================")
+    else:
+        print("<Not Found> No posts available.")
+
+    square.change_page_obt(page_num, va_id)
+
+
+def get_hot_list(va_id):
+    result = requests.post(
+        urljoin(config['base'], '/view/hot_list'), headers={
+            'va_id': str(va_id)
+        }
+    ).json()
+
+    if result:
+        print("=============================================================")
+        print("|Post ID|Title")
+        print("--------+----------------------------------------------------")
+
+        for res in result:
+            ui.post_idc_ui(res)
+        print("=============================================================")
+    else:
+        print("<Not Found> No posts available.")
 
 
 def author_opt_trans(va_id, pa_id, op_type):

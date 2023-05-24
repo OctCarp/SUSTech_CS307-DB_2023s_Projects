@@ -1,5 +1,6 @@
 package instance;
 
+import model.IdCon;
 import model.Post;
 import model.Reply;
 
@@ -11,6 +12,13 @@ public class ViewManager {
     PreparedStatement replyByIdQ;
     PreparedStatement reply2ByIdQ;
     PreparedStatement getCateQ;
+    PreparedStatement AllpostsQ;
+    PreparedStatement AllpostsobtQ;
+    PreparedStatement postreplies;
+    PreparedStatement replyreplies;
+    PreparedStatement hotlist;
+    PreparedStatement updatepostview;
+
 
 
     public Post getPost(int p_id, int va_id) {
@@ -19,6 +27,8 @@ public class ViewManager {
 
             postByIdQ.setInt(1, p_id);
             postByIdQ.setInt(2, va_id);
+            updatepostview.setInt(1, p_id);
+            updatepostview.executeUpdate();
             res = postByIdQ.executeQuery();
             if (res.next()) {
                 Post post = new Post();
@@ -98,14 +108,99 @@ public class ViewManager {
         }
     }
 
+    public IdCon[] get_All_Posts(int page_num,  int va_id) {
+        try {
+            ResultSet res;
+            int start = (page_num-1)*20;
+            AllpostsQ.setInt(1, va_id);
+            AllpostsQ.setInt(2, start);
+            res = AllpostsQ.executeQuery();
+            ArrayList<IdCon> out = new ArrayList<>();
+            while (res.next()) {
+                out.add(new IdCon(res.getInt("p_id"), res.getString("title")));
+            }
+            IdCon[] Array = new IdCon[out.size()];
+            return out.toArray(Array);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public IdCon[] get_All_Posts_obt(int page_num,  int va_id) {
+        try {
+            ResultSet res;
+            int start = (page_num-1)*20;
+            AllpostsobtQ.setInt(1, va_id);
+            AllpostsobtQ.setInt(2, start);
+            res = AllpostsobtQ.executeQuery();
+            ArrayList<IdCon> out = new ArrayList<>();
+            while (res.next()) {
+                out.add(new IdCon(res.getInt("p_id"), res.getString("title")));
+            }
+            IdCon[] Array = new IdCon[out.size()];
+            return out.toArray(Array);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public IdCon[] get_post_replies(int p_id, int va_id) {
+        try {
+            ResultSet res;
+            postreplies.setInt(1, p_id);
+            postreplies.setInt(2, va_id);
+            res = postreplies.executeQuery();
+            ArrayList<IdCon> out = new ArrayList<>();
+            while (res.next()) {
+                out.add(new IdCon(res.getInt("r_id1"), res.getString("r_content")));
+            }
+            IdCon[] Array = new IdCon[out.size()];
+            return out.toArray(Array);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public IdCon[] get_reply_replies(int r_id1, int va_id) {
+        try {
+            ResultSet res;
+            replyreplies.setInt(1, r_id1);
+            replyreplies.setInt(2, va_id);
+            res = replyreplies.executeQuery();
+            ArrayList<IdCon> out = new ArrayList<>();
+            while (res.next()) {
+                out.add(new IdCon(res.getInt("r_id2"), res.getString("r2_content")));
+            }
+            IdCon[] Array = new IdCon[out.size()];
+            return out.toArray(Array);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public IdCon[] get_hot_list(int va_id) {
+        try {
+            ResultSet res;
+            hotlist.setInt(1, va_id);
+            res = hotlist.executeQuery();
+            ArrayList<IdCon> out = new ArrayList<>();
+            while (res.next()) {
+                out.add(new IdCon(res.getInt("p_id"), res.getString("title")));
+            }
+            IdCon[] Array = new IdCon[out.size()];
+            return out.toArray(Array);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public ViewManager() {
         Connection conn = getConn();
         try {
             postByIdQ = conn.prepareStatement(
                     "SELECT p.title, p.content, p.p_time, p.p_city, a.a_name, p.a_id FROM posts p " +
                             "LEFT JOIN authors a on a.a_id = p.a_id WHERE p.p_id = ? " +
-                            "AND p.a_id NOT IN (SELECT b.blocked_id FROM blocked b WHERE b.a_id = ?)"
-            );
+                            "AND p.a_id NOT IN (SELECT b.blocked_id FROM blocked b WHERE b.a_id = ?)");
             getCateQ = conn.prepareStatement(
                     "SELECT pc.cate FROM p_cate pc WHERE pc.p_id = ?");
             replyByIdQ = conn.prepareStatement(
@@ -118,6 +213,33 @@ public class ViewManager {
                             "FROM sub_replies r2 LEFT JOIN authors a on a.a_id = r2.r2_a_id " +
                             "LEFT JOIN replies r1 on r1.r_id1 = r2.r_id1 WHERE r2.r_id2 = ? " +
                             "AND r2.r2_a_id NOT IN (SELECT b.blocked_id FROM blocked b WHERE b.a_id = ?)");
+            AllpostsQ = conn.prepareStatement(
+                    "SELECT p.title, p.content, p.p_time, p.p_city, a.a_name, p.a_id, p.p_id FROM posts p " +
+                            "LEFT JOIN authors a on a.a_id = p.a_id " +
+                            "AND p.a_id NOT IN (SELECT b.blocked_id FROM blocked b WHERE b.a_id = ?)" +
+                            "order by p.p_id LIMIT 20 OFFSET ? ");
+            AllpostsobtQ = conn.prepareStatement(
+                    "SELECT p.title, p.content, p.p_time, p.p_city, a.a_name, p.a_id, p.p_id FROM posts p " +
+                            "LEFT JOIN authors a on a.a_id = p.a_id " +
+                            "AND p.a_id NOT IN (SELECT b.blocked_id FROM blocked b WHERE b.a_id = ?)" +
+                            "order by p.p_time LIMIT 20 OFFSET ? ");
+            postreplies = conn.prepareStatement(
+                    "SELECT p.p_id, p.title, r.r_a_id, a.a_name, r.r_id1, r.r_content, r.r_stars " +
+                            "FROM replies r LEFT JOIN authors a on a.a_id = r.r_a_id " +
+                            "LEFT JOIN posts p on r.p_id = p.p_id WHERE r.p_id = ? " +
+                            "AND r.r_a_id NOT IN (SELECT b.blocked_id FROM blocked b WHERE b.a_id = ?)");
+            replyreplies = conn.prepareStatement(
+                    "SELECT r1.r_id1, r1.r_content, r2.r2_a_id, a.a_name, r2.r_id2, r2.r2_content,  r2.r2_stars " +
+                            "FROM sub_replies r2 LEFT JOIN authors a on a.a_id = r2.r2_a_id " +
+                            "LEFT JOIN replies r1 on r1.r_id1 = r2.r_id1 WHERE r2.r_id1 = ? " +
+                            "AND r2.r2_a_id NOT IN (SELECT b.blocked_id FROM blocked b WHERE b.a_id = ?)");
+            hotlist = conn.prepareStatement(
+                    "SELECT p.p_id, p.title, p.p_city, p.p_time, p.content, p.a_id, pv.view_count FROM posts p " +
+                            "LEFT JOIN post_views pv on pv.p_id = p.p_id " +
+                            "AND p.a_id NOT IN (SELECT b.blocked_id FROM blocked b WHERE b.a_id = ?)" +
+                            "ORDER BY pv.view_count DESC , p_id LIMIT 10 ");
+            updatepostview = conn.prepareStatement(
+                    "UPDATE post_views SET view_count = view_count + 1 WHERE p_id = ?");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

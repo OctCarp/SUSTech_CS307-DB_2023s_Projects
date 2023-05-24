@@ -1,5 +1,5 @@
 DROP TABLE IF EXISTS authors, p_cate, favorited, followed, blocked,
-    liked, posts, replies, sub_replies, shared;
+    liked, posts, post_views, replies, sub_replies, shared;
 
 CREATE TABLE IF NOT EXISTS authors
 (
@@ -20,6 +20,13 @@ CREATE TABLE IF NOT EXISTS posts
     content varchar   NOT NULL,
     p_time  timestamp NOT NULL,
     p_city  varchar   NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS post_views
+(
+    p_id integer REFERENCES posts (p_id),
+    view_count integer DEFAULT 0,
+    PRIMARY KEY (p_id)
 );
 
 CREATE TABLE IF NOT EXISTS p_cate

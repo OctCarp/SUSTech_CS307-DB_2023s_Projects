@@ -62,3 +62,9 @@ def exiting():
 
 def body(result):
     return result.content.decode('ascii')
+
+
+def choose_post_page():
+    print("Please choose a page")
+    print(">>> ", end="")
+    return input()

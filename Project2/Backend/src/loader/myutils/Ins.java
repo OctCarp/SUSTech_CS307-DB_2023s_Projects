@@ -36,6 +36,17 @@ public class Ins {
 
     }
 
+    public static void post_view_bat(PreparedStatement pre, int p_id, int view_count) {
+        try {
+            pre.setInt(1, p_id);
+            pre.setInt(2, view_count);
+            pre.addBatch();
+        } catch (SQLException se) {
+            System.err.println(se.getMessage());
+        }
+
+    }
+
     public static void cate_bat(PreparedStatement pre, int c_id, String name) {
         try {
             pre.setInt(1, c_id);

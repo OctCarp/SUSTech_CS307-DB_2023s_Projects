@@ -2,6 +2,7 @@ from square import view_mode
 from users import reg_main
 from users import login_mode
 from homepage import homepage_main
+from homepage import homepage_main_anonymous
 import util as u
 
 
@@ -14,6 +15,8 @@ def client_main():
         print("|        Please Enter Number To Select Your Target         |")
         print("|----------------------------------------------------------|")
         print("|  1. View           2.Login            3. Register        |")
+        print("|                                                          |")
+        print("|  4. anonymous login                                      |")
         print("|                                       q. Exit            |")
         print("============================================================")
         print(">>> ", end="")
@@ -26,6 +29,8 @@ def client_main():
             homepage_main(a_id)
         elif op == '3':
             reg_main()
+        elif op == '4':
+            homepage_main_anonymous()
         elif op == 'q':
             u.exiting()
         else:
