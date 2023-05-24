@@ -75,6 +75,16 @@ public class ViewHandler {
         return new Gson().toJson(ps);
     }
 
+    public static String multi_parameter_search(Request request, Response response) {
+        int va_id = Integer.parseInt(request.headers("va_id"));
+        String keyword = request.headers("keyword");
+        String category = request.headers("category");
+
+        IdCon[] ps = getViewInstance().get_multi_parameter_search(va_id, keyword, category);
+        return new Gson().toJson(ps);
+    }
+
+
     public static ViewManager getViewInstance() {
         if (viewInstance == null) {
             viewInstance = new ViewManager();

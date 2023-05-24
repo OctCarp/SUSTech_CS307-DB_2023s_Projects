@@ -18,6 +18,7 @@ def view_mode(va_id):
         print("|                   4. View All Posts                      |")
         print("|          5. View All Posts ordered by posting time       |")
         print("|            6. View TOP 10 hottest search list            |")
+        print("|                7. Multi-parameter search                 |")
         print("|----------------------------------------------------------|")
         print("|                                         b. back          |")
         print("============================================================")
@@ -40,6 +41,8 @@ def view_mode(va_id):
             get_all_post_obt(page_num, va_id)
         elif op == '6':
             get_hot_list(va_id)
+        elif op == '7':
+            Multi_parameter_search(va_id)
         elif op == 'b':
             flag = False
         else:
@@ -270,3 +273,30 @@ def author_ops(va_id, pa_id):
             flag = False
         else:
             print("<Wrong selection>")
+
+
+def Multi_parameter_search(va_id):
+    flag = True
+
+    while flag:
+        print()
+        print("============================================================")
+        print("|                [Multi_parameter_search]                  |")
+        print("|----------------------------------------------------------|")
+        print("|        c. confirm                       b. back          |")
+        print("============================================================")
+        print(">>> ", end="")
+        op = input()
+        if op == 'c':
+            print("Please input keyword and category inorder")
+            print("Please input keyword :")
+            print(">>> ", end="")
+            keyword = input()
+            print("Please input category :")
+            print(">>> ", end="")
+            category = input()
+            multi_parameter_search(va_id, keyword, category)
+        elif op == 'b':
+            flag = False
+        else:
+            print("<Wrong Selection>")

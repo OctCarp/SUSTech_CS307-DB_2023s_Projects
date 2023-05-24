@@ -7,6 +7,7 @@ public class SendManager {
     PreparedStatement postCateI;
     PreparedStatement r1I;
     PreparedStatement r2I;
+    PreparedStatement post_viewI;
 
 
     public boolean sendPost(int a_id, String title, String content, String city, String[] cates) {
@@ -19,7 +20,8 @@ public class SendManager {
             postI.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
             postI.setString(6, city);
             int res = postI.executeUpdate();
-
+            post_viewI.setInt(1, p_id);
+            post_viewI.setInt(2, 0);
             for (String cate : cates) {
                 postCateI.setInt(1, p_id);
                 postCateI.setString(2, cate);
@@ -74,6 +76,9 @@ public class SendManager {
             );
             r2I = conn.prepareStatement(
                     "INSERT INTO sub_replies (r_id2, r_id1, r2_content, r2_stars, r2_a_id) VALUES (?, ?, ?, ?, ?)"
+            );
+            post_viewI = conn.prepareStatement(
+                    "INSERT INTO post_views (p_id, view_count) VALUES (?, ?)"
             );
         } catch (SQLException e) {
             throw new RuntimeException(e);

@@ -5,6 +5,8 @@ import model.Post;
 import model.Reply;
 
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class ViewManager {
@@ -18,6 +20,7 @@ public class ViewManager {
     PreparedStatement replyreplies;
     PreparedStatement hotlist;
     PreparedStatement updatepostview;
+    PreparedStatement multi_parameter_search;
 
 
 
@@ -194,6 +197,24 @@ public class ViewManager {
         }
     }
 
+    public IdCon[] get_multi_parameter_search(int va_id, String keyword, String category) {
+        try {
+            ResultSet res;
+            multi_parameter_search.setString(1, keyword);
+            multi_parameter_search.setString(2, category);
+            multi_parameter_search.setInt(3, va_id);
+            res = multi_parameter_search.executeQuery();
+            ArrayList<IdCon> out = new ArrayList<>();
+            while (res.next()) {
+                out.add(new IdCon(res.getInt("p_id"), res.getString("title")));
+            }
+            IdCon[] Array = new IdCon[out.size()];
+            return out.toArray(Array);
+        } catch (SQLException  e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public ViewManager() {
         Connection conn = getConn();
         try {
@@ -222,7 +243,7 @@ public class ViewManager {
                     "SELECT p.title, p.content, p.p_time, p.p_city, a.a_name, p.a_id, p.p_id FROM posts p " +
                             "LEFT JOIN authors a on a.a_id = p.a_id " +
                             "AND p.a_id NOT IN (SELECT b.blocked_id FROM blocked b WHERE b.a_id = ?)" +
-                            "order by p.p_time LIMIT 20 OFFSET ? ");
+                            "order by p.p_time desc LIMIT 20 OFFSET ? ");
             postreplies = conn.prepareStatement(
                     "SELECT p.p_id, p.title, r.r_a_id, a.a_name, r.r_id1, r.r_content, r.r_stars " +
                             "FROM replies r LEFT JOIN authors a on a.a_id = r.r_a_id " +
@@ -240,6 +261,13 @@ public class ViewManager {
                             "ORDER BY pv.view_count DESC , p_id LIMIT 10 ");
             updatepostview = conn.prepareStatement(
                     "UPDATE post_views SET view_count = view_count + 1 WHERE p_id = ?");
+            multi_parameter_search = conn.prepareStatement(
+                    "SELECT p.p_id, p.a_id, p.title, p.content, p.p_time, p.p_city " +
+                            "FROM posts p " +
+                            "LEFT JOIN p_cate pc ON p.p_id = pc.p_id " +
+                            "WHERE p.title LIKE '%' || ? || '%' " +
+                            "  AND pc.cate = ? " +
+                            "  AND p.a_id NOT IN (SELECT b.blocked_id FROM blocked b WHERE b.a_id = ?)");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

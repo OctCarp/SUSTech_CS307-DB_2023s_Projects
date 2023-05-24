@@ -157,3 +157,28 @@ CREATE TRIGGER increment_view_count5
     AFTER INSERT ON liked
     FOR EACH ROW
 EXECUTE FUNCTION update_view_count_fsl();
+
+CREATE OR REPLACE FUNCTION delete_view_count_fsl()
+    RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE post_views
+    SET view_count = view_count - 2
+    WHERE p_id = OLD.p_id;
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER decr_view_count_favorite
+    AFTER DELETE ON favorited
+    FOR EACH ROW
+EXECUTE FUNCTION  delete_view_count_fsl();
+
+CREATE TRIGGER decr_view_count_shared
+    AFTER DELETE ON shared
+    FOR EACH ROW
+EXECUTE FUNCTION  delete_view_count_fsl();
+
+CREATE TRIGGER decr_view_count_liked
+    AFTER DELETE ON liked
+    FOR EACH ROW
+EXECUTE FUNCTION  delete_view_count_fsl();

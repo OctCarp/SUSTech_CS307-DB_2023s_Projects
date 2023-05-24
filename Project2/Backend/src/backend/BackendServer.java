@@ -37,6 +37,7 @@ public class BackendServer {
         post("/view/post_replies", ViewHandler::getpostreplies);
         post("/view/reply_replies", ViewHandler::getreplyreplies);
         post("/view/hot_list", ViewHandler::gethotlist);
+        post("/view/multi_parameter_search", ViewHandler::multi_parameter_search);
 
 
         after((Request request, Response response) -> {

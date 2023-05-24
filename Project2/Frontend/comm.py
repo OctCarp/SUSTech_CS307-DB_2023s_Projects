@@ -317,6 +317,28 @@ def get_hot_list(va_id):
         print("<Not Found> No posts available.")
 
 
+def multi_parameter_search(va_id, keyword, category):
+
+    result = requests.post(
+        urljoin(config['base'], '/view/multi_parameter_search'), headers={
+            'va_id': str(va_id),
+            'keyword': str(keyword),
+            'category': str(category)
+        }
+    ).json()
+
+    if result:
+        print("=============================================================")
+        print("|Post ID|Title")
+        print("--------+----------------------------------------------------")
+
+        for res in result:
+            ui.post_idc_ui(res)
+        print("=============================================================")
+    else:
+        print("<Not Found> No posts available.")
+
+
 def author_opt_trans(va_id, pa_id, op_type):
     va_id = str(va_id)
     pa_id = str(pa_id)
