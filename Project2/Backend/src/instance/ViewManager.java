@@ -9,6 +9,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
+import static java.lang.Integer.max;
+
 public class ViewManager {
     PreparedStatement postByIdQ;
     PreparedStatement replyByIdQ;
@@ -21,7 +23,6 @@ public class ViewManager {
     PreparedStatement hotlist;
     PreparedStatement updatepostview;
     PreparedStatement multi_parameter_search;
-
 
 
     public Post getPost(int p_id, int va_id) {
@@ -111,10 +112,10 @@ public class ViewManager {
         }
     }
 
-    public IdCon[] get_All_Posts(int page_num,  int va_id) {
+    public IdCon[] get_All_Posts(int page_num, int va_id) {
         try {
             ResultSet res;
-            int start = (page_num-1)*20;
+            int start = max((page_num - 1) * 20, 0);
             AllpostsQ.setInt(1, va_id);
             AllpostsQ.setInt(2, start);
             res = AllpostsQ.executeQuery();
@@ -129,10 +130,10 @@ public class ViewManager {
         }
     }
 
-    public IdCon[] get_All_Posts_obt(int page_num,  int va_id) {
+    public IdCon[] get_All_Posts_obt(int page_num, int va_id) {
         try {
             ResultSet res;
-            int start = (page_num-1)*20;
+            int start = max((page_num - 1) * 20, 0);
             AllpostsobtQ.setInt(1, va_id);
             AllpostsobtQ.setInt(2, start);
             res = AllpostsobtQ.executeQuery();
@@ -210,7 +211,7 @@ public class ViewManager {
             }
             IdCon[] Array = new IdCon[out.size()];
             return out.toArray(Array);
-        } catch (SQLException  e) {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
@@ -258,7 +259,7 @@ public class ViewManager {
                     "SELECT p.p_id, p.title, p.p_city, p.p_time, p.content, p.a_id, pv.view_count FROM posts p " +
                             "LEFT JOIN post_views pv on pv.p_id = p.p_id " +
                             "AND p.a_id NOT IN (SELECT b.blocked_id FROM blocked b WHERE b.a_id = ?)" +
-                            "ORDER BY pv.view_count DESC , p_id LIMIT 10 ");
+                            "ORDER BY pv.view_count DESC , p_id LIMIT 15 ");
             updatepostview = conn.prepareStatement(
                     "UPDATE post_views SET view_count = view_count + 1 WHERE p_id = ?");
             multi_parameter_search = conn.prepareStatement(

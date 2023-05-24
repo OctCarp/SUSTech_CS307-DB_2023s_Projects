@@ -203,6 +203,6 @@ public class NormalManager {
     }
 
     private Connection getConn() {
-        return ConnectionManager.getViewConn();
+        return ConnectionManager.getNormalConn();
     }
 }

@@ -118,7 +118,7 @@ public class Importer {
             id = authors.size();
             authors.add(name);
 
-            Ins.author_bat(pAuthor, id, name, randStrByLenAdd(authorIDs, 18), "1", null, null);
+            Ins.author_bat(pAuthor, id, name, String.valueOf(id), "1", null, null);
         }
 
         return id;
@@ -192,6 +192,9 @@ public class Importer {
             Statement Statement = conn.createStatement();
             conn.setAutoCommit(false);
             Statement.executeUpdate(Info.dropCreate);
+//            Statement.executeUpdate(Info.gainUsers);
+            Statement.executeUpdate("INSERT INTO authors (a_id, a_name, identity, passwd) " +
+                    "values (-2, 'anonymous', -2, 1);");
             conn.commit();
             conn.setAutoCommit(true);
 
@@ -220,6 +223,27 @@ public class Importer {
         }
         return conn;
     }
+    public static Connection getOgConnection() {
+        Connection conn = null;
+
+        try {
+            Class.forName("org.opengauss.Driver");
+        } catch (Exception e) {
+            System.err.println("Cannot find the PostgreSQL driver.");
+            System.exit(1);
+        }
+
+        try {
+            conn = DriverManager.getConnection("jdbc:opengauss://192.168.161.18:5432/CS307_Project2", "checker", "gauss@123");
+        } catch (SQLException e) {
+            System.err.println("Database connection failed");
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
+        return conn;
+    }
+
+
 
     private void prepare(Connection conn) {
         try {

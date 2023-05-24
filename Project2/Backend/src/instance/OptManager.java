@@ -241,6 +241,6 @@ public class OptManager {
     }
 
     private Connection getConn() {
-        return ConnectionManager.getViewConn();
+        return ConnectionManager.getOptConn();
     }
 }

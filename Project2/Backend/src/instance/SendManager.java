@@ -22,10 +22,13 @@ public class SendManager {
             int res = postI.executeUpdate();
             post_viewI.setInt(1, p_id);
             post_viewI.setInt(2, 0);
-            for (String cate : cates) {
-                postCateI.setInt(1, p_id);
-                postCateI.setString(2, cate);
-                postCateI.executeUpdate();
+            post_viewI.executeUpdate();
+            if (cates != null) {
+                for (String cate : cates) {
+                    postCateI.setInt(1, p_id);
+                    postCateI.setString(2, cate);
+                    postCateI.executeUpdate();
+                }
             }
 
             return res > 0;
@@ -86,6 +89,6 @@ public class SendManager {
     }
 
     private static Connection getConn() {
-        return ConnectionManager.getViewConn();
+        return ConnectionManager.getSenderConn();
     }
 }

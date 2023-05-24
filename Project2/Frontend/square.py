@@ -64,7 +64,7 @@ def change_page(page_num, va_id):
     if next_step == 'n':
         get_all_post(int(page_num) + 1, va_id)
     elif next_step == 'l':
-        get_all_post(int(page_num) - 1, va_id)
+        get_all_post(max(int(page_num) - 1, 1), va_id)
     elif next_step == 'j':
         print("jump to ___ page, input a positive number")
         jump_page = input()
@@ -103,7 +103,7 @@ def change_page_obt(page_num, va_id):
     if next_step == 'n':
         get_all_post(int(page_num) + 1, va_id)
     elif next_step == 'l':
-        get_all_post(int(page_num) - 1, va_id)
+        get_all_post(max(int(page_num) - 1, 1), va_id)
     elif next_step == 'j':
         print("jump to ___ page, input a positive number")
         jump_page = input()

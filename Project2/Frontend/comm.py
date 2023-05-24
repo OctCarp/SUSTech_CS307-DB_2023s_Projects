@@ -18,9 +18,13 @@ def send_post(a_id):
     content = nB("content")
     city = nB("location")
     tag = iB("tags, split by ',',word by word, s for skip")
-    if tag == 's':
-        tag = None
-    cate = [word.strip().capitalize() for word in tag.split(",")]
+
+    cate = None
+    if tag != 's':
+        try:
+            cate = [word.strip().capitalize() for word in tag.split(",")]
+        except AttributeError:
+            print('<Wrong Format>')
 
     confirm = input("Enter to confirm, b for back")
     if confirm == 'b':
@@ -186,6 +190,12 @@ def get_post_replies(va_id, p_id):
             for res in result:
                 ui.post_idc_ui(res)
             print("=============================================================")
+
+            print("Input Reply ID you want to view, else for back")
+            print(">>> ", end="")
+            r_id1 = input()
+            if r_id1.isdigit():
+                get_reply(r_id1, va_id)
         else:
             print("<Not Found> No reply available.")
 
@@ -214,6 +224,13 @@ def get_reply_replies(va_id, r_id1):
             for res in result:
                 ui.r2_idc_ui(res)
             print("=============================================================")
+
+            print("Input Sub Reply ID you want to view, else for back")
+            print(">>> ", end="")
+            r_id2 = input()
+            if r_id2.isdigit():
+                get_reply2(r_id2, va_id)
+
         else:
             print("<Not Found> No sub reply available.")
 
@@ -247,7 +264,7 @@ def get_reply2(r_id2, va_id):
                     sqr.reply2_op(result['ori_id'], r_id2, result['a_id'], va_id)
 
         else:
-            print("<Not Found> No such Post ID")
+            print("<Not Found> No such Sub Reply ID")
     else:
         print("<Wrong Format> Sub Reply ID is not valid")
 

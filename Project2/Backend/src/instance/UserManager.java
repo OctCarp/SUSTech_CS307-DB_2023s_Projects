@@ -72,6 +72,6 @@ public class UserManager {
 
 
     private static Connection getConn() {
-        return ConnectionManager.getViewConn();
+        return ConnectionManager.getAuthorsConn();
     }
 }
