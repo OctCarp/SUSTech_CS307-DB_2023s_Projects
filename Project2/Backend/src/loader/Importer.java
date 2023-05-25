@@ -188,10 +188,9 @@ public class Importer {
 
     private void init() {
         try {
-            conn = getConnection();
             Statement Statement = conn.createStatement();
             conn.setAutoCommit(false);
-            Statement.executeUpdate(Info.dropCreate);
+//            Statement.executeUpdate(Info.dropCreate);
 //            Statement.executeUpdate(Info.gainUsers);
             Statement.executeUpdate("INSERT INTO authors (a_id, a_name, identity, passwd) " +
                     "values (-2, 'anonymous', -2, 1);");

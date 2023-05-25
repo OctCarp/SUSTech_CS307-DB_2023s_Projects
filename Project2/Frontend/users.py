@@ -71,14 +71,14 @@ def reg(identity):
 
     phone = iB('PhoneNumber, b for back, s for Skip')
 
-    while len(phone) != 18 or (not phone.isdigit):
+    while len(phone) != 11 or (not phone.isdigit):
         if phone == 'b':
             return
         elif phone == 's':
             phone = None
             break
         else:
-            print('<Wrong format> Length must be 18')
+            print('<Wrong format> Length must be 11')
             phone = iB('PhoneNumber, b for back, s for Skip')
 
     result = requests.post(urljoin(config['base'], '/reg/regi'), data={

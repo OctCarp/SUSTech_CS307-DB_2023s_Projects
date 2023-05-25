@@ -13,6 +13,7 @@ public class NormalHandler {
         String type = request.headers("type");
 
         return switch (type) {
+            case "info" -> new Gson().toJson(getNormalInstance().getAuthorInfo(a_id));
             case "post" -> new Gson().toJson(getNormalInstance().getMyPosts(a_id));
             case "reply" -> new Gson().toJson(getNormalInstance().getMyReply(a_id));
             case "reply2" -> new Gson().toJson(getNormalInstance().getMyReply2(a_id));

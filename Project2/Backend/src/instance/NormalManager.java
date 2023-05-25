@@ -1,6 +1,8 @@
 package instance;
 
+import model.Author;
 import model.IdCon;
+import org.checkerframework.checker.units.qual.A;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ public class NormalManager {
     PreparedStatement favoritedQ;
     PreparedStatement likedQ;
     PreparedStatement sharedQ;
+    PreparedStatement authorQ;
 
     public IdCon[] getMyPosts(int a_id) {
         ResultSet resSet;
@@ -160,6 +163,25 @@ public class NormalManager {
         }
     }
 
+    public Author getAuthorInfo(int a_id) {
+        ResultSet resSet;
+        try {
+            authorQ.setInt(1, a_id);
+            resSet = authorQ.executeQuery();
+            resSet.next();
+
+            Author author = new Author();
+            author.setA_id(resSet.getInt("a_id"));
+            author.setName(resSet.getString("a_name"));
+            author.setIdentity(resSet.getString("identity"));
+            author.setPhone(resSet.getString("a_phone"));
+            author.setReg(resSet.getString("a_reg_time"));
+            return author;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     public NormalManager() {
         Connection conn = getConn();
@@ -196,6 +218,10 @@ public class NormalManager {
             sharedQ = getConn().prepareStatement(
                     "SELECT p.p_id, p.title FROM shared s LEFT JOIN authors a ON a.a_id = s.shared_id\n" +
                             "LEFT JOIN posts p on s.p_id = p.p_id WHERE a.a_id = ? "
+            );
+            authorQ = getConn().prepareStatement(
+                    "SELECT a.a_id, a.a_name, a.a_phone, a.identity, a.a_reg_time FROM authors a " +
+                            " WHERE a.a_id = ? "
             );
         } catch (SQLException e) {
             throw new RuntimeException(e);

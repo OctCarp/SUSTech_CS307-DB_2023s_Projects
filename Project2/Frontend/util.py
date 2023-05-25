@@ -67,4 +67,8 @@ def body(result):
 def choose_post_page():
     print("Please choose a page")
     print(">>> ", end="")
-    return input()
+    page_num = input()
+    if not page_num.isdigit():
+        return 1
+    else:
+        return page_num

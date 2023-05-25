@@ -4,7 +4,7 @@ DROP TABLE IF EXISTS authors, p_cate, favorited, followed, blocked,
 CREATE TABLE IF NOT EXISTS authors
 (
     a_id       integer PRIMARY KEY,
-    a_name     varchar NOT NULL UNIQUE,
+    a_name     varchar NOT NULL,
     identity   varchar NOT NULL UNIQUE,
     passwd     varchar NOT NULL,
 
@@ -112,7 +112,7 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER increment_view_count1
     AFTER INSERT ON replies
     FOR EACH ROW
-EXECUTE FUNCTION update_view_count_byreply();
+EXECUTE PROCEDURE update_view_count_byreply();
 
 CREATE OR REPLACE FUNCTION update_view_count_bysubreply()
     RETURNS TRIGGER AS $$
@@ -131,7 +131,7 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER increment_view_count2
     AFTER INSERT ON sub_replies
     FOR EACH ROW
-EXECUTE FUNCTION update_view_count_bysubreply();
+EXECUTE PROCEDURE update_view_count_bysubreply();
 
 CREATE OR REPLACE FUNCTION update_view_count_fsl()
     RETURNS TRIGGER AS $$
@@ -146,17 +146,17 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER increment_view_count3
     AFTER INSERT ON favorited
     FOR EACH ROW
-EXECUTE FUNCTION update_view_count_fsl();
+EXECUTE PROCEDURE update_view_count_fsl();
 
 CREATE TRIGGER increment_view_count4
     AFTER INSERT ON shared
     FOR EACH ROW
-EXECUTE FUNCTION update_view_count_fsl();
+EXECUTE PROCEDURE update_view_count_fsl();
 
 CREATE TRIGGER increment_view_count5
     AFTER INSERT ON liked
     FOR EACH ROW
-EXECUTE FUNCTION update_view_count_fsl();
+EXECUTE PROCEDURE update_view_count_fsl();
 
 CREATE OR REPLACE FUNCTION delete_view_count_fsl()
     RETURNS TRIGGER AS $$
@@ -171,14 +171,14 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER decr_view_count_favorite
     AFTER DELETE ON favorited
     FOR EACH ROW
-EXECUTE FUNCTION  delete_view_count_fsl();
+EXECUTE PROCEDURE  delete_view_count_fsl();
 
 CREATE TRIGGER decr_view_count_shared
     AFTER DELETE ON shared
     FOR EACH ROW
-EXECUTE FUNCTION  delete_view_count_fsl();
+EXECUTE PROCEDURE delete_view_count_fsl();
 
 CREATE TRIGGER decr_view_count_liked
     AFTER DELETE ON liked
     FOR EACH ROW
-EXECUTE FUNCTION  delete_view_count_fsl();
+EXECUTE PROCEDURE delete_view_count_fsl();

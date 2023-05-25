@@ -30,6 +30,7 @@ def homepage_main(a_id):
         print("|                     7. My Followed                       |")
         print("|                     8. My Blocked                        |")
         print("|                     9. Create Post                       |")
+        print("|                10. view my information                   |")
         print("|                     s. Square                            |")
         print("|----------------------------------------------------------|")
         print("|          x. Log Out                     q. Quit          |")
@@ -54,6 +55,8 @@ def homepage_main(a_id):
             my_opt_authors(a_id, "block")
         elif op == '9':
             comm.send_post(a_id)
+        elif op == '10':
+            my_information(a_id)
         elif op == 's':
             sqr.view_mode(a_id)
         elif op == 'x':
@@ -65,7 +68,6 @@ def homepage_main(a_id):
 
 
 def homepage_main_anonymous():
-
     a_id = -2
     flag = True
     while flag:
@@ -98,6 +100,26 @@ def homepage_main_anonymous():
             u.exiting()
         else:
             print("<Wrong Selection>")
+
+
+def my_information(a_id):
+    a_id = str(a_id)
+    if a_id.isdigit():
+        r = requests.post(urljoin(config['base'], 'normal/own'), headers={
+            'a_id': str(a_id),
+            'type': 'info'
+        }).json()
+        if r:
+            print("This is your information List:")
+            print("Your name is: %s" % r['name'])
+            print("Your identity is: %s" % r['identity'])
+            print("Your phone number is: %s" % r['phone'])
+            print("Your reg time is: %s" % r['reg'])
+
+        else:
+            print("<Not Found> No such person at all")
+
+    input("<End> Press Enter to continue...")
 
 
 def my_post(a_id):

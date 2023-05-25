@@ -13,15 +13,15 @@ public class ConnectionManager {
     private static final String rootPassword2 = "gauss@123";
 
     private final static String viewerName = "viewer";
-    private final static String viewerPass = "viewer_pass";
+    private final static String viewerPass = "viewer@123";
     private final static String opterName = "opter";
-    private final static String opterPass = "opter_pass";
+    private final static String opterPass = "opter@123";
     private final static String normalName = "normal";
-    private final static String normalPass = "normal_pass";
+    private final static String normalPass = "normal@123";
     private final static String senderName = "sender";
-    private final static String senderPass = "sender_pass";
+    private final static String senderPass = "sender@123";
     private final static String authorsName = "authors";
-    private final static String authorsPass = "authors_pass";
+    private final static String authorsPass = "authors@123";
 
     static Connection viewConn, normalConn, optConn,senderConn,authorsConn, rootConn;
 

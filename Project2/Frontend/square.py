@@ -1,6 +1,8 @@
 from comm import *
 from util import inputByType as iB
 from util import choose_post_page
+from util import inputNotBlank as nB
+
 
 
 def view_mode(va_id):
@@ -101,9 +103,9 @@ def change_page_obt(page_num, va_id):
     print(">>> ", end="")
     next_step = input()
     if next_step == 'n':
-        get_all_post(int(page_num) + 1, va_id)
+        get_all_post_obt(int(page_num) + 1, va_id)
     elif next_step == 'l':
-        get_all_post(max(int(page_num) - 1, 1), va_id)
+        get_all_post_obt(max(int(page_num) - 1, 1), va_id)
     elif next_step == 'j':
         print("jump to ___ page, input a positive number")
         jump_page = input()
@@ -289,13 +291,21 @@ def Multi_parameter_search(va_id):
         op = input()
         if op == 'c':
             print("Please input keyword and category inorder")
-            print("Please input keyword :")
             print(">>> ", end="")
-            keyword = input()
-            print("Please input category :")
+            keyword = nB("key word")
             print(">>> ", end="")
-            category = input()
+            category = nB("category")
             multi_parameter_search(va_id, keyword, category)
+            print("Input Post ID you want to view, b for back")
+            print(">>> ", end="")
+            p_id = input()
+            if p_id.isdigit():
+                get_post(p_id, va_id)
+            elif p_id == 'b':
+                flag = False
+            else:
+                print("<Wrong Format> Must be a number")
+
         elif op == 'b':
             flag = False
         else:
