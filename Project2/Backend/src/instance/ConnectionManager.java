@@ -23,7 +23,7 @@ public class ConnectionManager {
     private final static String authorsName = "authors";
     private final static String authorsPass = "authors@123";
 
-    static Connection viewConn, normalConn, optConn,senderConn,authorsConn, rootConn;
+    private static Connection viewConn, normalConn, optConn, senderConn, authorsConn, rootConn;
 
     public static void closeAllConn() {
         try {
@@ -72,9 +72,9 @@ public class ConnectionManager {
     }
 
     public static Connection getSenderConn() {
-        if (senderConn== null) {
+        if (senderConn == null) {
             try {
-                senderConn= DriverManager.getConnection(baseUrl, senderName, senderPass);
+                senderConn = DriverManager.getConnection(baseUrl, senderName, senderPass);
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -83,9 +83,9 @@ public class ConnectionManager {
     }
 
     public static Connection getAuthorsConn() {
-        if (authorsConn== null) {
+        if (authorsConn == null) {
             try {
-                authorsConn= DriverManager.getConnection(baseUrl, authorsName, authorsPass);
+                authorsConn = DriverManager.getConnection(baseUrl, authorsName, authorsPass);
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
