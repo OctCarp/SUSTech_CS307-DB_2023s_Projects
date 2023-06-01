@@ -265,7 +265,7 @@ public static String sendReply2(Request request, Response response) {
 
 ![data_stutio](img/data_stutio.png)
 
-接下来在后端导入 `opengauss-jdbc-5.0.0.jar`。在连接管理类中加载驱动，设置连接的地址为：
+接下来在后端导入 [`opengauss-jdbc-5.0.0.jar`]()。在连接管理类中加载驱动，设置连接的地址为：
 
 ```java
     private static final String baseUrl = 
@@ -276,7 +276,252 @@ public static String sendReply2(Request request, Response response) {
 
 #### 更多 API 设计
 
+#### 查看个人信息
 
+```python
+#在登录成功后，用户会进入个人界面，在这个界面中用户可以查看自己的用户信息（view my information），这个功能和上面的“个人列表显示”运用相同的API接口，返回的信息经过前端处理显示用户的：名称（name）、身份号（identity）、电话号码（phone number）以及用户注册时间（reg time）
+		============================================================
+        |                          [Views]                         |
+        |        Please Enter Number To Select Your View           |
+        |----------------------------------------------------------|
+        |                     1. My Posts                          |
+        |                     2. My Replies                        |
+        |                     3. My Sub Replies                    |
+        |                     4. My Liked                          |
+        |                     5. My Shared                         |
+        |                     6. My Favorited                      |
+        |                     7. My Followed                       |
+        |                     8. My Blocked                        |
+        |                     9. Create Post                       |
+        |                10. view my information                   |
+        |                     s. Square                            |
+        |----------------------------------------------------------|
+        |          x. Log Out                     q. Quit          |
+        ============================================================
+```
+
+#### 匿名发言
+
+```python
+#登录界面选择匿名登录之后会进入下面的窗口，我们对于匿名登录的用户只提供了回复帖子，回复一级回复和一些查看帖子的功能，并且匿名用户的a_id始终设置为-2，接口与普通用户相同，仅仅在前端限制了匿名用户的行为
+
+       ============================================================
+       |                          [Views]                         |
+       |        Please Enter Number To Select Your View           |
+       |----------------------------------------------------------|
+       |                     1. My Replies                        |
+       |                     2. My Sub Replies                    |
+       |                     s. Square                            |
+       |----------------------------------------------------------|
+       |          x. back       l. Log in        q. Quit          |
+       ============================================================
+        
+```
+
+#### 逐级向下查看回复和二级回复和逐级向上查看回复和 Post 信息
+
+```python
+#当我们选择对帖子（Post）进行操作后，会显示下面的操作面板，在这个操作面板中，我们可以查看该帖子所有的回复（View all replies） ，并且我们可以接着查看特定ID的回复（reply）的详细信息，并进行操作。      
+		|----------------------------------------------------------|
+             What do you want to do to Post ID: {0}?".format(p_id))
+        |----------------------------------------------------------|
+        |  1.trans like      2.trans favorited       3.trans share |
+        |  4.Post author operation                   5.reply       |
+        |  6.View all replies                                      |
+        |----------------------------------------------------------|
+        |                                         b. back          |
+        ============================================================
+
+```
+```java
+ // 获取帖子所有一级回复的方法
+ public static String getpostreplies(Request request, Response response) {
+        int p_id = Integer.parseInt(request.headers("p_id"));
+        int va_id = Integer.parseInt(request.headers("va_id"));
+		//参数为帖子的ID和访问者的ID
+        IdCon[] ps = getViewInstance().get_post_replies(p_id, va_id);
+        //返回用Gson打包的.json数组，其中包含了该帖子（post）的所有一级回复（reply）的信息
+        return new Gson().toJson(ps);
+ }
+```
+
+```python
+#当我们选择对Reply进行操作后，会显示下面的操作面板，在这个操作面板中，我们可以查看该回复的所有二级回复（View all sub replies），并且我们可以接着查看特定ID的二级回复（sub reply）的详细信息，并进行操作。同时在下面的操作面板中，我们也可以查看该回复（reply）对应的帖子（Upper Post）的详细信息，并进行操作。               
+        |----------------------------------------------------------|
+           What do you want to do to Reply ID: {0}?".format(r_id1)
+        |----------------------------------------------------------|
+        | 1.Upper Post      2.Follow Author       3.Reply          |
+        | 4.View all sub replies                                   |
+        |----------------------------------------------------------|
+        |                                         b.Back           |
+        ============================================================  
+               
+#通过一级回复（reply）查看帖子详细信息的方法与按ID查看特定ID的帖子（post）的方法相同
+```
+
+```java
+//获取一级回复（reply）的所有二级回复（sub reply）的方法
+public static String getreplyreplies(Request request, Response response) {
+        int r_id1 = Integer.parseInt(request.headers("r_id1"));
+        int va_id = Integer.parseInt(request.headers("va_id"));
+		//参数为一级回复的ID和访问者的ID
+        IdCon[] ps = getViewInstance().get_reply_replies(r_id1, va_id);
+        //返回用Gson打包的.json数组，其中包含了该一级回复（reply）的所有二级回复（sub reply）的信息
+        return new Gson().toJson(ps);
+}
+```
+
+
+```python
+#当我们选择对sub Reply进行操作后，会显示下面的操作面板，在这个操作面板中，我们可以查看该二级回复的上级回复（Upper Reply），并进行操作。 
+        |----------------------------------------------------------|
+         What do you want to do to Sub Reply ID: {0}?".format(r_id2)
+        |----------------------------------------------------------|
+        |  1.Upper Reply                       2.Follow Author     |
+        |----------------------------------------------------------|
+        |                                          b. back         |
+        ============================================================
+             
+#通过二级回复查看一级回复详细信息的方法与按ID查看特定ID的一级回复（reply）的方法相同
+```
+
+#### 查看所有发表的帖子
+
+##### 可以选择按发布时间从最新发布的开始排序或者按帖子的 ID 从小到大排序
+
+##### 此处为按发布时间排序：
+
+```java
+//按发布时间从最新发布的帖子开始排序查询所有帖子的方法
+public static String getAllPostobt(Request request, Response response) {
+        int page_num = Integer.parseInt(request.headers("page_num"));
+        int va_id = Integer.parseInt(request.headers("va_id"));
+		//参数为输入查询的是第几面（page_num），访问者的ID（va_id）
+    
+        IdCon[] ps = getViewInstance().get_All_Posts_obt(page_num,  va_id);
+    	//返回用Gson打包的.json数组，其中包含了访问者查询的当前页中的post的信息
+        return new Gson().toJson(ps);
+}
+```
+
+##### 此处为按 Post 的 ID 排序：
+
+```java
+//按Post的ID从小到大排序查询所有帖子的方法
+public static String getAllPost(Request request, Response response) {
+        int page_num = Integer.parseInt(request.headers("page_num"));
+        int va_id = Integer.parseInt(request.headers("va_id"));
+		//参数为输入查询的是第几面（page_num），访问者的ID（va_id）
+    
+        IdCon[] ps = getViewInstance().get_All_Posts(page_num,  va_id);
+    	//返回用Gson打包的.json数组，其中包含了访问者查询的当前页中的post的信息
+        return new Gson().toJson(ps);
+}
+```
+
+##### 页面跳转
+
+```python
+#在显示查询的页面后，会显示下面的窗口，用户可以自由选择接下来浏览的页面，也可以查询特定ID的Post。对应的API和上面的相同，通过前端将用户选择的页数（page_num）传递给后端再进行查询。
+	=============================================================
+    |        Please Enter Character To Select Next Step         |
+    |-----------------------------------------------------------|
+    |    n. next page    l. last page    j. jump to ___ page    |
+    |                                                           |
+    |      c. check content of post which PostID is ___         |
+    |                                                           |
+    |                                       b. back             |
+    =============================================================
+```
+
+#### 热搜榜
+
+```java
+//实现热搜榜方法：我们通过对每一个帖子计算其热度值，按热度值从高到低排序截取排名靠前的Post
+//计算热度值的方法为：每当帖子被回复，热度值+3，每当帖子的一级回复被回复或者帖子被点赞、收藏、转发，热度值+1，每当有访问者访问该帖子（查看该帖子的详细信息），热度值+1。            
+public static String gethotlist(Request request, Response response) {
+        int va_id = Integer.parseInt(request.headers("va_id"));
+		//参数为访问者的ID
+        IdCon[] ps = getViewInstance().get_hot_list(va_id);
+    	//返回用Gson打包的.json数组，其中包含了上热搜榜的post的信息
+        return new Gson().toJson(ps);
+}
+```
+
+下面是在建表时创建了一个专门用来记录每个帖子热度值的表，并且过函数和 trigger（在此就不做代码展示了）在帖子被回复、帖子的一级回复被二级回复、帖子被收藏、转发、点赞、帖子被取消收藏、转发、点赞时自动更新热度的值。并且在用户每次查询特定Post的时候后端会自动向 `post_view` 中做更新，将该 post 对应的热度值`view_count` + 1。
+
+```sql
+--下面时记录每个帖子的热度值创建的名为post_views的表，热度值为view_count建表时初始化为0
+CREATE TABLE IF NOT EXISTS post_views
+(
+    p_id integer REFERENCES posts (p_id),
+    view_count integer DEFAULT 0,
+    PRIMARY KEY (p_id)
+);
+
+--这是创建的函数：每当该帖子受到回复的时候，热度值（view_count）就自动执行+3
+CREATE OR REPLACE FUNCTION update_view_count_byreply()
+    RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE post_views
+    SET view_count = view_count + 3
+    WHERE p_id = NEW.p_id;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+--这是创建的函数：每当该帖子的一级回复受到二级回复的时候，热度值（view_count）就自动执行+2
+CREATE OR REPLACE FUNCTION update_view_count_bysubreply()
+    RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE post_views
+    SET view_count = view_count + 2
+    WHERE p_id = (
+        SELECT p_id
+        FROM replies
+        WHERE r_id1 = NEW.r_id1
+    );
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+--这是创建的函数：每当该帖子受到收藏（favorite）、转发（share）或点赞（like）的时候，热度值（view_count）就自动执行+2
+CREATE OR REPLACE FUNCTION update_view_count_fsl()
+    RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE post_views
+    SET view_count = view_count + 2
+    WHERE p_id = NEW.p_id;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+--这是创建的函数：每当该帖子失去收藏（favorite）、转发（share）或点赞（like）的时候，热度值（view_count）就自动执行-2
+CREATE OR REPLACE FUNCTION delete_view_count_fsl()
+    RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE post_views
+    SET view_count = view_count - 2
+    WHERE p_id = OLD.p_id;
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+```
+
+#### 多参数搜索
+
+```java
+//实现（静态）多参数搜索方法：当用户进入多参数搜索模块时，前端会提醒用户依次输入搜索关键词搜索和类型，其中关键词为Post标题中包含的字符，搜索结果的所有Post的标题中均包含用户搜索的关键词，并且所有Post的类型中包含用户搜索的类型
+public static String multi_parameter_search(Request request, Response response) {
+        int va_id = Integer.parseInt(request.headers("va_id"));
+        String keyword = request.headers("keyword");
+        String category = request.headers("category");
+		//参数为访问者的ID，搜索的关键词，搜索的类型
+        IdCon[] ps = getViewInstance().get_multi_parameter_search(va_id, keyword, category);
+    	//返回用Gson打包的.json数组，其中包含了符合多参数搜索筛选条件的所有post的信息
+        return new Gson().toJson(ps);
+}
+```
 
 #### 封装后端服务器，基于 HTTP 通信
 
@@ -319,7 +564,7 @@ public class BackendServer {
 
 #### 数据库连接池
 
-在框架下本项目简单实现了数据库连接池，用 `Connection Manager` 类做管理，API 方法分析数据，并调用对应的连接进行数据库操作。并对池子中的不连接赋予不同的权限，将在权限实现处详细说明
+在框架下本项目简单实现了数据库连接池，用 `ConnectionManager` 类做管理，API 方法分析数据，并调用对应的连接进行数据库操作。并对池子中的不连接赋予不同的权限，将在权限实现处详细说明
 
 ```java
     private static Connection viewConn, normalConn, optConn,
@@ -338,7 +583,7 @@ public class BackendServer {
 
 #### 权限设计
 
-结合连接管理，对不同的用户授予不同的权限，后端 API 方法分别使用对应的连接的 role 去实现功能，以下是一些示例：
+结合 `ConnectionManager` ，对不同的用户授予不同的权限，后端 API 方法分别使用对应的连接的 `ROLE` 去实现功能，以下是一些示例：
 
 ```sql
 CREATE USER viewer WITH PASSWORD 'viewer@123';
