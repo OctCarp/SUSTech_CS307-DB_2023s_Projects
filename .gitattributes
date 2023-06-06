@@ -1,2 +1,10 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# SQL in PLpgSQL
+*.sql linguist-language=PLpgSQL
+
+# binary files
+*.png binary
+*.pdf binary
+
