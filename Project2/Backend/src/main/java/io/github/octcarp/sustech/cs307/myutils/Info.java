@@ -45,18 +45,17 @@ public class Info {
                     Info.class.getClassLoader().getResource(prop.getProperty("postF")).toURI()
             )), Post.class);
             replies = JSON.parseArray(Files.readString(Paths.get(
-                    Info.class.getClassLoader().getResource("replyF").toURI(
-                    )
+                    Info.class.getClassLoader().getResource(prop.getProperty("replyF")).toURI()
             )), Reply.class);
 
             dropCreate = Files.readString(Paths.get(
-                    Info.class.getClassLoader().getResource("dropCreateF").toURI()));
+                    Info.class.getClassLoader().getResource(prop.getProperty("dropCreateF")).toURI()));
             gainUsers= Files.readString(Paths.get(
-                    Info.class.getClassLoader().getResource("gainUserF").toURI()));
+                    Info.class.getClassLoader().getResource(prop.getProperty("gainUserF")).toURI()));
             enTrigger = Files.readString(Paths.get(
-                    Info.class.getClassLoader().getResource("enTriggersF").toURI()));
+                    Info.class.getClassLoader().getResource(prop.getProperty("enTriggersF")).toURI()));
             disTrigger = Files.readString(Paths.get(
-                    Info.class.getClassLoader().getResource("disTriggersF").toURI()));
+                    Info.class.getClassLoader().getResource(prop.getProperty("disTriggersF")).toURI()));
 
         } catch (IOException e) {
             System.err.println("can not find db user file");
